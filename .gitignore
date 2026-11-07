@@ -1,0 +1,18 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+outputs/
+_cache/
+*.pdf
+*.pptx
+*.png
+*.zip
+build/
+dist/
+*.egg-info/
+
+# Explicitly retain reviewed public demo images/assets
+!docs/images/*.png
+!demo/*.pptx
+!demo/*.pdf

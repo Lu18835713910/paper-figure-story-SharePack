@@ -1,0 +1,43 @@
+name: SharePack RC pre-release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  test-and-release:
+    if: github.repository == 'Lu18835713910/paper-figure-story-SharePack'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install and run source tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest build
+          python -m pytest -q
+          python -m build --wheel
+          sharepack --help
+      - name: Create release candidate (once)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG=v0.1.0-rc.1
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; no overwrite."
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "v0.1.0-rc.1 — First experimental preview" \
+            --notes-file RELEASE_NOTES.md \
+            --prerelease \
+            --latest=false \
+            dist/*.whl \
+            demo/SharePack_PFS_10cards.pptx \
+            demo/SharePack_PFS_10cards.pdf

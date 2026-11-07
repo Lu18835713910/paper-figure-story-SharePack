@@ -1,0 +1,161 @@
+{
+  "source_pdf_sha256": "3caaa94a5b9e9f55d20262b32de6d89ac68e857ae9b3ff9277353887278c234c",
+  "regions": [
+    {
+      "id": "F1b",
+      "figure": "Figure 1",
+      "pdf_page": 2,
+      "crop_pdf_pt": [
+        216.667,
+        240.556,
+        548.889,
+        341.667
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F1c",
+      "figure": "Figure 1",
+      "pdf_page": 2,
+      "crop_pdf_pt": [
+        56.667,
+        344.444,
+        358.333,
+        503.333
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F1ef",
+      "figure": "Figure 1",
+      "pdf_page": 2,
+      "crop_pdf_pt": [
+        60.0,
+        501.667,
+        283.333,
+        615.0
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F1g",
+      "figure": "Figure 1",
+      "pdf_page": 2,
+      "crop_pdf_pt": [
+        361.111,
+        427.222,
+        548.333,
+        505.0
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F1hi",
+      "figure": "Figure 1",
+      "pdf_page": 2,
+      "crop_pdf_pt": [
+        286.667,
+        506.667,
+        550.0,
+        617.222
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F2ab",
+      "figure": "Figure 2",
+      "pdf_page": 4,
+      "crop_pdf_pt": [
+        56.111,
+        48.889,
+        550.0,
+        199.444
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F2c",
+      "figure": "Figure 2",
+      "pdf_page": 4,
+      "crop_pdf_pt": [
+        56.111,
+        204.444,
+        546.667,
+        360.0
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F3ab",
+      "figure": "Figure 3",
+      "pdf_page": 5,
+      "crop_pdf_pt": [
+        59.444,
+        48.333,
+        546.111,
+        158.333
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F3cd",
+      "figure": "Figure 3",
+      "pdf_page": 5,
+      "crop_pdf_pt": [
+        60.556,
+        160.556,
+        450.556,
+        310.0
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F3e",
+      "figure": "Figure 3",
+      "pdf_page": 5,
+      "crop_pdf_pt": [
+        56.667,
+        310.0,
+        261.667,
+        566.667
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F3fg",
+      "figure": "Figure 3",
+      "pdf_page": 5,
+      "crop_pdf_pt": [
+        269.444,
+        312.222,
+        514.444,
+        562.778
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    },
+    {
+      "id": "F4ab",
+      "figure": "Figure 4",
+      "pdf_page": 6,
+      "crop_pdf_pt": [
+        56.111,
+        49.444,
+        541.667,
+        245.0
+      ],
+      "review_status": "PENDING",
+      "license_note": "Passmore et al. 2026 CC BY 4.0; derivative panel crop"
+    }
+  ]
+}

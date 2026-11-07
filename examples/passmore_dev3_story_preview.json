@@ -1,0 +1,626 @@
+{
+  "contract": "sharepack-story-v1",
+  "origin": "DIRECT_PDF_AGENT_REVIEWED_PARTIAL",
+  "paper": {
+    "title": "Closed-loop optogenetic control of cell biology enables outcome-driven microscopy",
+    "authors_short": "Passmore et al.",
+    "journal": "Nature Communications 17:1087 (2026)",
+    "doi": "10.1038/s41467-025-67848-5",
+    "article_type": "original_research"
+  },
+  "pdf_sha256": "3caaa94a5b9e9f55d20262b32de6d89ac68e857ae9b3ff9277353887278c234c",
+  "profile": "standard",
+  "review_status": "PARTIAL",
+  "formal_ready": false,
+  "sources": [
+    {
+      "id": "S1",
+      "pdf_page": 1,
+      "section": "Introduction / Abstract",
+      "figure_refs": [],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S2",
+      "pdf_page": 2,
+      "section": "Results: A flexible smart microscopy platform",
+      "figure_refs": [],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S3",
+      "pdf_page": 3,
+      "section": "Results: Directing single-cell migration / Robust feedback control",
+      "figure_refs": [
+        "Fig. 1b-f",
+        "Supplementary Fig. 2b"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S4",
+      "pdf_page": 3,
+      "section": "Results: Adaptive modulation of migration speed",
+      "figure_refs": [
+        "Fig. 1g-i",
+        "Supplementary Fig. 2f-g"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S5",
+      "pdf_page": 4,
+      "section": "Results: Parallel control of multiple migrating cells",
+      "figure_refs": [
+        "Fig. 2a-c"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S6",
+      "pdf_page": 5,
+      "section": "Results: Dynamic feedback control of protein localisation / Model-informed controller design",
+      "figure_refs": [
+        "Fig. 3a-c",
+        "Supplementary Fig. 4"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S7",
+      "pdf_page": 5,
+      "section": "Results: Independent control of nuclear and cytosolic protein levels",
+      "figure_refs": [
+        "Fig. 3d-g",
+        "Supplementary Fig. 5"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S8",
+      "pdf_page": 6,
+      "section": "Results: Simultaneous feedback control of protein localisation in multiple cells",
+      "figure_refs": [
+        "Fig. 4a-b",
+        "Supplementary Fig. 6c-e"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    },
+    {
+      "id": "S9",
+      "pdf_page": 6,
+      "section": "Discussion and Methods",
+      "figure_refs": [
+        "Fig. 1-4"
+      ],
+      "review_status": "DIRECT_TEXT_CHECKED_FIGURES_PARTIAL"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C01",
+      "question": "如何从被动观察转向主动控制？",
+      "method": "比较智能显微镜常见采集反馈与主动光遗传干预。",
+      "observation": "本文以主动改变生物过程作为目标。",
+      "meaning": "显微镜可将成像反馈用于生物干预而非只优化拍摄。",
+      "limit": "不能宣称此前没有任何闭环光遗传研究。",
+      "source_ids": [
+        "S1",
+        "S2"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    },
+    {
+      "id": "C02",
+      "question": "反馈回路具体怎么运行？",
+      "method": "实时成像、分割、与设定目标比较，调整光照。",
+      "observation": "反馈回路根据真实结果动态调整照光。",
+      "meaning": "控制对象是细胞行为的目标误差，而非拍摄参数。",
+      "limit": "不等于通用的复杂生物过程控制。",
+      "source_ids": [
+        "S2"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    },
+    {
+      "id": "C03",
+      "question": "细胞能沿预定路径运动吗？",
+      "method": "对表达TIAM1光敏构件的HT1080细胞进行轨迹追踪与空间照光。",
+      "observation": "个别细胞能够沿圆形路线持续迁移超过10小时。",
+      "meaning": "反馈定位能够持续引导部分细胞的方向与路线。",
+      "limit": "单次实例不能代表所有细胞的群体均值。",
+      "source_ids": [
+        "S3"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": [
+        {
+          "label": "单细胞路径",
+          "value": ">10小时",
+          "definition": "示例细胞持续跟随路线的时间",
+          "comparison": "预设圆形路径，非总体平均持续时长"
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "question": "在不同细胞和光强下轨迹是否稳定？",
+      "method": "比较循环路径、不同光强、细胞路径偏差。",
+      "observation": "多个细胞在控制下保持接近目标路径，但个体速度不同。",
+      "meaning": "位置控制对速度异质性有一定容忍度。",
+      "limit": "样本量及定量指标须对应各图面板。",
+      "source_ids": [
+        "S3"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": [
+        {
+          "label": "路径偏差",
+          "value": "5 µm以内",
+          "definition": "目标轨迹与细胞中心的距离",
+          "comparison": "多个细胞的路径控制，不是平均误差"
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "question": "不同光强能否精确设定速度？",
+      "method": "每个循环或半循环改变辐照度并测量相对投影速度。",
+      "observation": "相对速度能调节，但固定光强不能确保每个细胞达到相同绝对速度。",
+      "meaning": "改变光照强度不等于绝对速度可以精确控制。",
+      "limit": "不能把相对速度变化当作绝对速度设定成功。",
+      "source_ids": [
+        "S4"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    },
+    {
+      "id": "C06",
+      "question": "如何让三个细胞协调且避免碰撞？",
+      "method": "给三细胞不同路径，用预判碰撞与回拉策略协调照光。",
+      "observation": "三个细胞沿各自路径移动，可减速避碰；还观察到拥挤环境的细胞互相影响。",
+      "meaning": "反馈可以协调有限数量细胞的路径与避碰。",
+      "limit": "有限细胞数的演示不等于普遍集体迁移机制。",
+      "source_ids": [
+        "S5"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": [
+        {
+          "label": "同步控制",
+          "value": "3个细胞",
+          "definition": "分别跟踪并主动调光的细胞数",
+          "comparison": "独立路径及主动避碰演示"
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "question": "光照能调控蛋白在细胞核/细胞质之间的分布吗？",
+      "method": "在U2OS-LEXY细胞中用蓝光驱动核输出并追踪荧光。",
+      "observation": "LEXY蛋白的核/质荧光分布随反馈光照调整。",
+      "meaning": "同一闭环思路可推广到亚细胞蛋白定位任务。",
+      "limit": "荧光强度是读出代理，不能自动等于绝对蛋白浓度。",
+      "source_ids": [
+        "S6"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    },
+    {
+      "id": "C08",
+      "question": "标准PID遇到什么问题，怎样改进？",
+      "method": "比较标准PID与增益调度PID在不同强度设定点的误差。",
+      "observation": "标准PID跨强度范围出现稳态偏差，增益调度改善了控制表现。",
+      "meaning": "真实细胞的非线性响应要求调整控制器参数。",
+      "limit": "标准PID局部小误差不能推广为全工作区间。",
+      "source_ids": [
+        "S6",
+        "S7"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": [
+        {
+          "label": "局部PID误差",
+          "value": "<10%",
+          "definition": "测得荧光强度相对设定值偏差",
+          "comparison": "仅针对部分标准PID条件，不是全强度范围"
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "question": "核与质控制在不同实验中是否稳定？",
+      "method": "在同一细胞对核/质控制重复进行，并测量多个目标值。",
+      "observation": "核内控制比细胞质更平滑，重复控制能接近不同设定值。",
+      "meaning": "对不同设定点的蛋白定位控制可重复实现。",
+      "limit": "不同控制器及测量空间的噪声不同。",
+      "source_ids": [
+        "S7",
+        "S6"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    },
+    {
+      "id": "C10",
+      "question": "七个不同细胞能否接近同一核内目标？",
+      "method": "使用脉宽调制向七个细胞分别给光并追踪核荧光。",
+      "observation": "七个细胞虽然需要不同光强，最终核内荧光都趋近共同目标。",
+      "meaning": "不同细胞可以使用不同输入实现相似输出。",
+      "limit": "七细胞共享目标并不表示给予同一剂量光。",
+      "source_ids": [
+        "S8"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": [
+        {
+          "label": "单独反馈",
+          "value": "7个细胞",
+          "definition": "用不同光强分别调控的细胞数",
+          "comparison": "同一目标核内荧光，而非同一光照剂量"
+        }
+      ]
+    },
+    {
+      "id": "C11",
+      "question": "结果能推广到所有细胞吗？",
+      "method": "对照两类光敏系统、细胞类型和控制边界。",
+      "observation": "适用性依赖光敏构件、细胞系统、硬件和处理成本。",
+      "meaning": "这是针对特定工程化体系的概念验证。",
+      "limit": "不能推断所有细胞、所有组织或三维体系都有效。",
+      "source_ids": [
+        "S3",
+        "S4",
+        "S6",
+        "S8",
+        "S9"
+      ],
+      "review_status": "PARTIAL",
+      "required": true,
+      "metrics": []
+    }
+  ],
+  "cards": [
+    {
+      "order": 1,
+      "stage": "研究问题 / COVER",
+      "title": "显微镜不只观察：还能按目标控制细胞",
+      "intro": "目标驱动显微镜把实时分析与光遗传干预连成闭环。",
+      "claim_ids": [
+        "C01",
+        "C02"
+      ],
+      "figure_asset_ids": [],
+      "method": "实时拍摄细胞，计算实际状态与目标的偏差，再调整照光。",
+      "observation": "作者搭建了一套能反馈调节生物过程的显微镜平台。",
+      "interpretation": "研究核心是“看见偏差，再改变干预”。",
+      "takeaway": "研究核心是“看见偏差，再改变干预”。",
+      "question": "如何从被动观察转向主动控制？",
+      "flow_steps": [
+        "拍摄",
+        "分析",
+        "比较目标",
+        "调整光照"
+      ],
+      "narrative_role": "cover",
+      "layout_type": "cover",
+      "figure_selections": []
+    },
+    {
+      "order": 2,
+      "stage": "背景与问题 / FIGURE 1",
+      "title": "为什么仅靠自动拍摄还不够？",
+      "intro": "从优化成像转向主动改变细胞行为，是论文的研究起点。",
+      "claim_ids": [
+        "C01",
+        "C02"
+      ],
+      "figure_asset_ids": [
+        "F1b"
+      ],
+      "method": "用空间光调制器更新照光位置与强度，连续采集并纠偏。",
+      "observation": "同一套闭环可将细胞实际反馈转化为下一次光照控制。",
+      "interpretation": "研究目标从“拍得好”发展为“细胞接近设定目标”。",
+      "takeaway": "研究目标从“拍得好”发展为“细胞接近设定目标”。",
+      "question": "如何从被动观察转向主动控制？",
+      "narrative_role": "background",
+      "layout_type": "evidence",
+      "figure_selections": [
+        {
+          "asset_id": "F1b",
+          "panel_labels": [
+            "F1b"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "全文框架 / STORY MAP",
+      "title": "作者如何逐步验证闭环控制？",
+      "intro": "围绕运动和蛋白定位两条分支测试共同的反馈原理。",
+      "claim_ids": [
+        "C02",
+        "C03",
+        "C07"
+      ],
+      "figure_asset_ids": [],
+      "method": "研究线A关注运动路径；研究线B关注蛋白核/质转运。",
+      "observation": "两类不同的细胞过程都能由测量—比较—调光流程驱动。",
+      "interpretation": "两条研究线是互补证据，不等于实际实验的时间先后。",
+      "takeaway": "两条研究线是互补证据，不等于实际实验的时间先后。",
+      "question": "反馈回路具体怎么运行？",
+      "flow_steps": [
+        "建立反馈",
+        "细胞运动",
+        "核/质定位",
+        "整合证据"
+      ],
+      "narrative_role": "framework",
+      "layout_type": "framework",
+      "figure_selections": []
+    },
+    {
+      "order": 4,
+      "stage": "发现一 / FIGURE 1",
+      "title": "细胞真的能沿着指定路线走吗？",
+      "intro": "HT1080细胞的光敏系统允许研究者改变细胞的迁移方向。",
+      "claim_ids": [
+        "C03",
+        "C04"
+      ],
+      "figure_asset_ids": [
+        "F1c",
+        "F1ef"
+      ],
+      "method": "用追踪算法检测细胞中心，再实时调整照光区域。",
+      "observation": "单细胞示例沿圆形路径运行超过10小时；群体偏差较小。",
+      "interpretation": "反馈控制可保持位置接近路线，但单个例子不代表总体。",
+      "takeaway": "反馈控制可保持位置接近路线，但单个例子不代表总体。",
+      "question": "细胞能沿预定路径运动吗？",
+      "narrative_role": "finding",
+      "layout_type": "evidence",
+      "figure_selections": [
+        {
+          "asset_id": "F1c",
+          "panel_labels": [
+            "F1c"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        },
+        {
+          "asset_id": "F1ef",
+          "panel_labels": [
+            "F1ef"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "stage": "发现二 / FIGURE 1",
+      "title": "调整光强，能准确控制走路速度吗？",
+      "intro": "研究者让细胞沿圆形轨道运动，逐圈改变照光强度。",
+      "claim_ids": [
+        "C05"
+      ],
+      "figure_asset_ids": [
+        "F1g",
+        "F1hi"
+      ],
+      "method": "比较不同辐照度下的相对运动速度及初始速度差异。",
+      "observation": "光强能让细胞加速或减速，却难统一设定绝对速度。",
+      "interpretation": "位置控制有效，并不等于速度控制已被彻底解决。",
+      "takeaway": "位置控制有效，并不等于速度控制已被彻底解决。",
+      "question": "不同光强能否精确设定速度？",
+      "narrative_role": "finding",
+      "layout_type": "comparison",
+      "figure_selections": [
+        {
+          "asset_id": "F1g",
+          "panel_labels": [
+            "F1g"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        },
+        {
+          "asset_id": "F1hi",
+          "panel_labels": [
+            "F1hi"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "stage": "发现三 / FIGURE 2",
+      "title": "三个细胞同时移动，怎样避免碰撞？",
+      "intro": "研究从单细胞扩展到多细胞不同路径的同步控制。",
+      "claim_ids": [
+        "C06"
+      ],
+      "figure_asset_ids": [
+        "F2ab",
+        "F2c"
+      ],
+      "method": "分别追踪三细胞，预测相撞风险后调整照光方向。",
+      "observation": "细胞可以独立移动并减速避碰；拥挤场景显示相互影响。",
+      "interpretation": "验证了有限规模的协调能力，不能据此宣称普遍机制。",
+      "takeaway": "验证了有限规模的协调能力，不能据此宣称普遍机制。",
+      "question": "如何让三个细胞协调且避免碰撞？",
+      "narrative_role": "comparison",
+      "layout_type": "comparison",
+      "figure_selections": [
+        {
+          "asset_id": "F2ab",
+          "panel_labels": [
+            "F2ab"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        },
+        {
+          "asset_id": "F2c",
+          "panel_labels": [
+            "F2c"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "stage": "研究转折 / FIGURE 3",
+      "title": "细胞内蛋白也能按设定值调整吗？",
+      "intro": "研究从移动整个细胞转向改变蛋白的核/质定位。",
+      "claim_ids": [
+        "C07",
+        "C08"
+      ],
+      "figure_asset_ids": [
+        "F3ab"
+      ],
+      "method": "用LEXY系统和PID反馈，根据荧光偏差持续调整蓝光。",
+      "observation": "可以调节核/质荧光，但基础PID在一些区间出现偏差。",
+      "interpretation": "出现新问题：相同控制参数不能适应所有细胞状态。",
+      "takeaway": "出现新问题：相同控制参数不能适应所有细胞状态。",
+      "question": "光照能调控蛋白在细胞核/细胞质之间的分布吗？",
+      "narrative_role": "method",
+      "layout_type": "method",
+      "figure_selections": [
+        {
+          "asset_id": "F3ab",
+          "panel_labels": [
+            "F3ab"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "stage": "方法改进 / FIGURE 3",
+      "title": "换一种PID，能让蛋白控制更稳定吗？",
+      "intro": "作者针对非线性与细胞间差异加入增益调度。",
+      "claim_ids": [
+        "C08",
+        "C09"
+      ],
+      "figure_asset_ids": [
+        "F3cd",
+        "F3fg"
+      ],
+      "method": "按目标强度范围优化PID增益，并测试核与质控制。",
+      "observation": "改进后的控制在多设定点更稳定，核内示例持续约两小时。",
+      "interpretation": "关键贡献不只是会调光，而是根据细胞响应调整控制。",
+      "takeaway": "关键贡献不只是会调光，而是根据细胞响应调整控制。",
+      "question": "标准PID遇到什么问题，怎样改进？",
+      "narrative_role": "comparison",
+      "layout_type": "comparison",
+      "figure_selections": [
+        {
+          "asset_id": "F3cd",
+          "panel_labels": [
+            "F3cd"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        },
+        {
+          "asset_id": "F3fg",
+          "panel_labels": [
+            "F3fg"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "stage": "跨细胞验证 / FIGURE 4",
+      "title": "七个细胞不同，也能达到同一个目标？",
+      "intro": "每个细胞表达量不同，统一给光未必得到统一结果。",
+      "claim_ids": [
+        "C10"
+      ],
+      "figure_asset_ids": [
+        "F4ab"
+      ],
+      "method": "使用脉宽调制分别控制七个细胞的光强并测量核荧光。",
+      "observation": "七细胞接受不同光强，核荧光却能趋向共同设定值。",
+      "interpretation": "相同目标不要求相同输入，这体现了反馈的实际价值。",
+      "takeaway": "相同目标不要求相同输入，这体现了反馈的实际价值。",
+      "question": "七个不同细胞能否接近同一核内目标？",
+      "narrative_role": "finding",
+      "layout_type": "evidence",
+      "figure_selections": [
+        {
+          "asset_id": "F4ab",
+          "panel_labels": [
+            "F4ab"
+          ],
+          "reason": "原论文预选局部图，科学关联和轴标仍需最终人工审核",
+          "scientific_check": "PENDING"
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "stage": "全文结论 / SYNTHESIS",
+      "title": "论文真正证明了什么，还有哪些边界？",
+      "intro": "回到最初的科学问题：显微镜能否主动引导细胞？",
+      "claim_ids": [
+        "C11",
+        "C05",
+        "C08"
+      ],
+      "figure_asset_ids": [],
+      "method": "整合运动控制、蛋白定位、个体差异和多细胞反馈证据。",
+      "observation": "在特定光敏工程化细胞中完成了目标驱动控制的概念验证。",
+      "interpretation": "不能推断任意细胞、组织或生物过程都能精准控制。",
+      "takeaway": "不能推断任意细胞、组织或生物过程都能精准控制。",
+      "question": "结果能推广到所有细胞吗？",
+      "flow_steps": [
+        "直接观察",
+        "证据支持",
+        "重要限制",
+        "未来验证"
+      ],
+      "narrative_role": "synthesis",
+      "layout_type": "synthesis",
+      "figure_selections": []
+    }
+  ],
+  "warning": "Card text was manually prepared from the current article and prior retest; not a general automatic model.",
+  "required_figure_labels": [
+    "Figure 1",
+    "Figure 2",
+    "Figure 3",
+    "Figure 4"
+  ]
+}
