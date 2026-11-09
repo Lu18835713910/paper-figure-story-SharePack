@@ -10,4 +10,7 @@ The images under `docs/images/` are screenshots/overview generated from actual *
 
 **Attribution and rights:** See [`NOTICE_THIRD_PARTY.md`](../NOTICE_THIRD_PARTY.md), the [article](https://doi.org/10.1038/s41467-025-67848-5) and the [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/). The article's experimental panels are authentic; SharePack authored the card layout and Chinese interpretation, some of which require ongoing domain review.
 
+
+**Visual quality notice (2026-11-09):** The initial ten-card overview and some exported screenshots (notably `story_map.png`, and a local caption area in `path_deviation.png`) contain baked-in text overlaps. This is a source/export problem rather than a GitHub Markdown layout problem. The repository home page now shows the clearer real `standalone_design_reference.png` and `protein_control.png` instead. The two-page standalone-leaning reference is *not* evidence of a clean standalone blind test, nor proof that the ten-card PPTX/PDF were fixed. Historical files remain unchanged pending source-level correction and visual re-export.
+
 **Source status:** The scientific story drew on earlier PFS-generated test data and Agent curation. Raw PFS A/B model files and source-index snapshots are **not included** in this public demonstration. The PFS version displayed in the screenshots reflects an upstream test campaign, not that the CLI reproduced all ten cards automatically.
