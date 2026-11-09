@@ -12,11 +12,14 @@ from pptx.oxml.xmlchemy import OxmlElement
 from .common import ContractError,digest,load,save,within
 from .contract import validate_story
 from .planning import panel_selection_audit
+from .publication_styles import active_style, current_style, select_style
 
 PAL={'bg':'FBFCFE','navy':'18354D','royal':'205B83','ink':'25394B','muted':'566E7D','border':'CBDBE7',
     'light':'EDF5FA','white':'FFFFFF','mint':'E7F3EF','peach':'FDF1E4','green':'246F5B','line':'4084A5'}
 def rgb(k):
-    h=PAL.get(k,k).lstrip('#');return RGBColor(*[int(h[i:i+2],16) for i in (0,2,4)])
+    theme=current_style()
+    h=(theme.palette.get(k,PAL.get(k,k)) if theme is not None else PAL.get(k,k)).lstrip('#')
+    return RGBColor(*[int(h[i:i+2],16) for i in (0,2,4)])
 
 def rect(sl,x,y,w,h,fill='white',stroke=None,rounded=False):
     t=sl.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE if rounded else MSO_SHAPE.RECTANGLE,
@@ -31,10 +34,13 @@ def text(sl,value,x,y,w,h,size=11,color='navy',bold=False,align=PP_ALIGN.LEFT):
     f=t.text_frame;f.clear();f.word_wrap=True
     f.margin_top=f.margin_bottom=0;f.margin_left=f.margin_right=Inches(.02)
     p=f.paragraphs[0];p.alignment=align;p.line_spacing=1.11
+    theme=current_style()
+    latin_font=theme.latin_font if theme is not None else 'Times New Roman'
+    cjk_font=theme.cjk_font if theme is not None else 'SimHei'
     for piece in re.findall(r'[\x00-\x7F]+|[^\x00-\x7F]+',str(value)):
-        r=p.add_run();r.text=piece;r.font.name='Times New Roman' if piece.isascii() else 'SimHei'
+        r=p.add_run();r.text=piece;r.font.name=latin_font if piece.isascii() else cjk_font
         r.font.size=Pt(size);r.font.color.rgb=rgb(color);r.font.bold=bold
-        ea=OxmlElement('a:ea');ea.set('typeface','SimHei');r._r.get_or_add_rPr().append(ea)
+        ea=OxmlElement('a:ea');ea.set('typeface',cjk_font);r._r.get_or_add_rPr().append(ea)
     return t
 
 def arrow(sl,x1,y1,x2,y2):
@@ -212,22 +218,37 @@ def slides(story,assets,root):
                          'small_panel_flag':any(x['draw_height_in']<1.30 for x in fig_records)})
     return prs,geometry
 
-def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform'):
+def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform', pdf_index_path=None):
     story_path=Path(story_path).resolve();asset_path=Path(asset_path).resolve();root=asset_path.parent
     outdir=Path(outdir).resolve();story=load(story_path);assets=load(asset_path)
     qa=validate_story(story,assets,root,profile=profile)
+    # PDF-index metadata is a visual style hint, not scientific review.
+    index_path=Path(pdf_index_path).resolve() if pdf_index_path else None
+    hint=None
+    if index_path:
+        index=load(index_path)
+        if index.get('pdf_sha256')!=story.get('pdf_sha256'):
+            raise ContractError('PUBLICATION_INDEX_PDF_HASH_MISMATCH')
+        hint=index.get('publication_hint')
+    paper_for_style=dict(story.get('paper',{}))
+    if hint and not paper_for_style.get('source_type') and not paper_for_style.get('journal'):
+        paper_for_style['publication_hint']=hint
+    publication_style=select_style(paper_for_style)
     if outdir==root or outdir==story_path.parent:raise ContractError('OUTPUT_SAME_AS_INPUT')
     outdir.mkdir(parents=True,exist_ok=True)
     pptpath=outdir/'SharePack_editable.pptx'
     if pptpath.exists():raise ContractError('OUTPUT_ALREADY_EXISTS_USE_NEW_DIRECTORY')
-    if layout_engine=='legacy':
-        deck,geometry=slides(story,assets,root)
-    elif layout_engine=='freeform':
-        from .freeform import slides_freeform
-        deck,geometry=slides_freeform(story,assets,root)
-    else:raise ContractError('LAYOUT_ENGINE_UNKNOWN')
+    with active_style(publication_style):
+        if layout_engine=='legacy':
+            deck,geometry=slides(story,assets,root)
+        elif layout_engine=='freeform':
+            from .freeform import slides_freeform
+            deck,geometry=slides_freeform(story,assets,root)
+        else:raise ContractError('LAYOUT_ENGINE_UNKNOWN')
     deck.save(pptpath)
     reports={'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
+     'publication_style':publication_style.to_dict(),
+     'publication_index_sha256':digest(index_path) if index_path else None,
      'pptx_sha256':digest(pptpath),'pfs_needed':bool(story.get('pfs_bridge')),
      'layout_engine':layout_engine,'layout_geometry':geometry, 'panel_selection_audit':panel_selection_audit(story,assets),'scientific_status':'PARTIAL' if not qa['formal_ready'] else 'REVIEWED_SOURCE_ONLY',
      'contract_qa':qa,'original_figure_assets_used':sum(len(c.get('figure_asset_ids',[])) for c in story['cards'])}
@@ -288,7 +309,9 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     small_slots=[{'card':g['card'],'asset_id':slot['asset_id'],'draw_height_in':slot['draw_height_in']}
                  for g in geometry for slot in g['evidence_figure_slots'] if slot['draw_height_in']<1.30]
     reports['static_visual_qa']={'canvas_overflow':overflow,'simhei_declared':'SimHei' in xml,
-       'tnr_declared':'Times New Roman' in xml,'small_panel_slots':small_slots,
+       'tnr_declared':'Times New Roman' in xml,
+       'expected_cjk_font':publication_style.cjk_font,
+       'expected_latin_font':publication_style.latin_font,'small_panel_slots':small_slots,
        'text_text_collisions':text_collisions,
        'layout_status':'PARTIAL_REQUIRES_REDISTRIBUTION' if small_slots or overflow or text_collisions else 'STRUCTURAL_PASS',
        'real_office_review':'PENDING','mobile_visual_review':'PENDING'}
@@ -313,5 +336,6 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
                     'mobile_review_required':g.get('mobile_review_required',False)} for g in geometry],
           'science_review':'NOT_PERFORMED_BY_LAYOUT_ENGINE',
           'visual_review':'REQUIRES_HUMAN_OR_OFFICE_INSPECTION'})
+    save(outdir/'publication_style.json',publication_style.to_dict())
     save(outdir/'qa_report.json',reports)
     return reports
