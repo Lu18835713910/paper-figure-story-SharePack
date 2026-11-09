@@ -5,19 +5,25 @@
 
 > **v0.1.0-rc.1 · Experimental pre-release** — This repository contains executable experimental code, not a one-click PDF-to-verified-conclusions product. Cross-paper tests and a clean Windows install remain pending; see [limitations](docs/KNOWN_LIMITATIONS.md).
 
-![实际十卡总览](docs/images/ten_card_overview.png)
+## 真实作品展示｜优先使用排版清晰的截图
 
-[打开十卡演示PPTX](demo/SharePack_PFS_10cards.pptx) · [查看十卡PDF](demo/SharePack_PFS_10cards.pdf)
+[![SharePack真实科研卡片排版参考：研究框架与原始Figure](docs/images/standalone_design_reference.png)](docs/images/standalone_design_reference.png)
 
-**上图是真实制作的十页PowerPoint成品截图**，不是概念渲染。案例中的研究解释由Agent/人工整理与复核；该视觉效果尚未全部实现为任意论文自动排版的一键能力。
+**上图来自实际制作的PowerPoint页面**，不是AI概念渲染。其中左侧是研究框架卡，右侧是包含原论文 Figure 1e/f 的分析卡。它属于**独立模式倾向的设计参考**，不等同于通过跨论文盲测的独立模式交付。
 
-## 三张真实效果图
+### PFS 协同版：实际 Figure 证据卡
 
-| 全文故事 | 原始 Figure 与数字 | 蛋白控制结果 |
-|---|---|---|
-| ![全文框架](docs/images/story_map.png) | ![位置偏差](docs/images/path_deviation.png) | ![蛋白控制](docs/images/protein_control.png) |
+[![PFS协同版实际蛋白控制卡片，第9/10页](docs/images/protein_control.png)](docs/images/protein_control.png)
 
-[查看独立模式视觉参考](docs/images/standalone_design_reference.png) · [示例说明与论文署名](docs/DEMO_PROVENANCE.md)
+**上图来自既有 PFS 协同十卡案例的第9页**，保留原论文 Figure 和结论边界，非自动复现通用能力的证明。
+
+### 十卡历史交付与版本说明
+
+[查看完整十卡总览（历史导出，部分页面有文字重叠）](docs/images/ten_card_overview.png) · [可编辑PPTX](demo/SharePack_PFS_10cards.pptx) · [PDF预览](demo/SharePack_PFS_10cards.pdf)
+
+> **已知视觉缺陷：** 首次预发布的部分截图（特别是 `story_map.png`，以及 `path_deviation.png` 的局部）存在文字重叠，问题源于原始渲染文件，并非GitHub网页宽度所致。为避免误导，首页暂不内嵌这些有缺陷的截图；历史原件仍保留，待从可编辑源稿修复、重导并逐页视觉验收后更新。清晰的设计参考图不能用来冒充原十卡已修复。
+
+[示例来源、版权及展示范围](docs/DEMO_PROVENANCE.md) · [已知限制](docs/KNOWN_LIMITATIONS.md)
 
 ## 核心用途
 
