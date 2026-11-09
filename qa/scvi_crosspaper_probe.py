@@ -90,12 +90,25 @@ def run():
    rep["status"]="VALIDATION_FAIL"
    print("SCVI_REAL_PAPER_QA="+json.dumps(rep,ensure_ascii=False));raise RuntimeError("validation fail")
   try:
-   qa=build(root/"story.json",root/"assets"/"assets.json",root/"render",render_png=False,layout_engine="freeform")
-   rep["render"]={"success":True,"slides":qa["contract_qa"]["cards"],"layout_types":[x["layout_type"] for x in qa["layout_geometry"]],
+   qa=build(root/"story.json",root/"assets"/"assets.json",root/"render",render_png=True,layout_engine="freeform")
+   rep["render"]={"success":True,"slides":qa["contract_qa"]["cards"],
+      "png_count":qa.get("png_count",0),"layout_types":[x["layout_type"] for x in qa["layout_geometry"]],
       "text_collisions":qa["static_visual_qa"]["text_text_collisions"][:10],
       "small_panel_slots":qa["static_visual_qa"]["small_panel_slots"],
       "release_ready":qa["release_ready"],"blockers":qa["release_blockers"],
       "pptx_bytes":(root/"render"/"SharePack_editable.pptx").stat().st_size}
+   if (root/"render"/"00_contact_sheet.png").exists():
+    from PIL import Image,ImageDraw,ImageFont
+    import shutil
+    public=Path("qa_preview");public.mkdir(exist_ok=True)
+    thumb=Image.open(root/"render"/"00_contact_sheet.png").convert("RGB")
+    canvas=Image.new("RGB",(thumb.width,thumb.height+92),(238,244,251))
+    canvas.paste(thumb,(0,92))
+    d=ImageDraw.Draw(canvas)
+    d.text((16,10),"scVI PREPRINT - UNREVIEWED ENGINEERING PREVIEW",fill=(140,30,25),stroke_width=0)
+    d.text((16,43),"Original preprint arXiv:1709.02082 | No scientific or font QA approval",fill=(50,62,77))
+    canvas.save(public/"scvi_unreviewed_contact_sheet.png")
+    rep["render"]["preview_artifact"]="qa_preview/scvi_unreviewed_contact_sheet.png"
   except Exception as e:
    rep["render"]={"success":False,"error":type(e).__name__+": "+str(e)}
   rep["status"]="RENDERED_ENGINEERING_ONLY" if rep["render"]["success"] else "RENDER_FAIL"
