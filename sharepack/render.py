@@ -13,6 +13,7 @@ from .common import ContractError,digest,load,save,within
 from .contract import validate_story
 from .planning import panel_selection_audit
 from .publication_styles import active_style, current_style, select_style
+from .brand_assets import active_logo, current_logo, check_logo
 
 PAL={'bg':'FBFCFE','navy':'18354D','royal':'205B83','ink':'25394B','muted':'566E7D','border':'CBDBE7',
     'light':'EDF5FA','white':'FFFFFF','mint':'E7F3EF','peach':'FDF1E4','green':'246F5B','line':'4084A5'}
@@ -42,6 +43,17 @@ def text(sl,value,x,y,w,h,size=11,color='navy',bold=False,align=PP_ALIGN.LEFT):
         r.font.size=Pt(size);r.font.color.rgb=rgb(color);r.font.bold=bold
         ea=OxmlElement('a:ea');ea.set('typeface',cjk_font);r._r.get_or_add_rPr().append(ea)
     return t
+
+def embed_authorized_logo(sl, logo, x, y, w, h):
+    """Keep the actual mark intact (aspect-preserving); no brand alteration."""
+    ratio = logo.width_px/logo.height_px
+    iw = min(w, h*ratio)
+    ih = iw/ratio
+    xx=x+(w-iw)/2
+    yy=y+(h-ih)/2
+    return sl.shapes.add_picture(str(logo.path), Inches(xx), Inches(yy),
+                                 width=Inches(iw), height=Inches(ih))
+
 
 def arrow(sl,x1,y1,x2,y2):
     if abs(x1-x2)>1e-6 and abs(y1-y2)>1e-6:raise ContractError('NONORTHOGONAL_ARROW')
@@ -174,7 +186,12 @@ def slides(story,assets,root):
                   'synthesis' if ('结论' in stage or '综合' in stage or 'summary' in stage) else
                   'cover' if ('封面' in stage or '研究问题' in stage or 'cover' in stage) else 'evidence')
         rect(s,0,0,7.5,10,'bg');rect(s,0,0,7.5,.055,'navy')
-        _checked_text(s,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),.48,.24,5.50,.29,10.1,'royal',True,label='masthead')
+        logo=current_logo()
+        if logo is not None:
+            embed_authorized_logo(s,logo,.48,.15,1.22,.42)
+            _checked_text(s,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),1.83,.24,4.10,.29,9.2,'royal',True,label='masthead')
+        else:
+            _checked_text(s,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),.48,.24,5.50,.29,10.1,'royal',True,label='masthead')
         _checked_text(s,f'{num:02} / {len(story["cards"]):02}',6.19,.24,.78,.28,10.8,'muted',align=PP_ALIGN.RIGHT,label='counter')
         rect(s,.48,.70,6.52,.012,'border')
         rect(s,.48,.87,min(4.6,max(1.40,_cell_len(c['stage'])*.13+.32)),.33,'light',rounded=True)
@@ -218,7 +235,7 @@ def slides(story,assets,root):
                          'small_panel_flag':any(x['draw_height_in']<1.30 for x in fig_records)})
     return prs,geometry
 
-def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform', pdf_index_path=None):
+def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform', pdf_index_path=None, logo_manifest_path=None):
     story_path=Path(story_path).resolve();asset_path=Path(asset_path).resolve();root=asset_path.parent
     outdir=Path(outdir).resolve();story=load(story_path);assets=load(asset_path)
     qa=validate_story(story,assets,root,profile=profile)
@@ -234,11 +251,12 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     if hint and not paper_for_style.get('source_type') and not paper_for_style.get('journal'):
         paper_for_style['publication_hint']=hint
     publication_style=select_style(paper_for_style)
+    publication_logo=check_logo(logo_manifest_path,publication_style,story.get('paper',{}))
     if outdir==root or outdir==story_path.parent:raise ContractError('OUTPUT_SAME_AS_INPUT')
     outdir.mkdir(parents=True,exist_ok=True)
     pptpath=outdir/'SharePack_editable.pptx'
     if pptpath.exists():raise ContractError('OUTPUT_ALREADY_EXISTS_USE_NEW_DIRECTORY')
-    with active_style(publication_style):
+    with active_style(publication_style), active_logo(publication_logo):
         if layout_engine=='legacy':
             deck,geometry=slides(story,assets,root)
         elif layout_engine=='freeform':
@@ -248,6 +266,7 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     deck.save(pptpath)
     reports={'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
      'publication_style':publication_style.to_dict(),
+     'publication_logo':publication_logo.report() if publication_logo else {'status':'NOT_EMBEDDED_NO_VERIFIED_PERMISSION'},
      'publication_index_sha256':digest(index_path) if index_path else None,
      'pptx_sha256':digest(pptpath),'pfs_needed':bool(story.get('pfs_bridge')),
      'layout_engine':layout_engine,'layout_geometry':geometry, 'panel_selection_audit':panel_selection_audit(story,assets),'scientific_status':'PARTIAL' if not qa['formal_ready'] else 'REVIEWED_SOURCE_ONLY',
@@ -358,5 +377,6 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
           'science_review':'NOT_PERFORMED_BY_LAYOUT_ENGINE',
           'visual_review':'REQUIRES_HUMAN_OR_OFFICE_INSPECTION'})
     save(outdir/'publication_style.json',publication_style.to_dict())
+    save(outdir/'publication_logo.json',reports['publication_logo'])
     save(outdir/'qa_report.json',reports)
     return reports
