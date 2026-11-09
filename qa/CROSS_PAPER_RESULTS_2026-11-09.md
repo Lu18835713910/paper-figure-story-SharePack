@@ -27,7 +27,10 @@
 - `validate_story`: `valid=true` (structural only), `formal_ready=false`; warnings for both assets and eight claims `PENDING`.
 - `render(layout_engine="freeform",render_png=False)`: **success**, **8 slides**, PPTX size **341,811 bytes**; layout modes = `logic`, `text_synthesis`, `figure_hero`, `figure_split`; no reported text-text box collisions, canvas overflow, or under-threshold figure slots.
 - `release_ready=false`: blockers `SCIENCE_AND_WINDOWS_VISUAL_REVIEW_NOT_PERFORMED` and `PANEL_SELECTION_NOT_REVIEWED`.
-- **No actual LibreOffice/PDF/PNG render and no desktop/mobile screenshot inspection in this probe.** Structural geometry is not proof of visual correctness.
+- **Follow-up actual export (run 42563311741):** successfully rendered all **8 PDF pages and 8 PNG images** using LibreOffice; a watermarked visual overview was uploaded as a temporary Actions artifact. The QA contact sheet was visually inspected; this is still **not** a native Windows PowerPoint or independent full-size mobile certification.
+- **Observed in real rasterized overview:** no comparable massive text overlap at overview scale; however multiple pages have substantial unused space, the repeated four-step diagram is generic, and the candidate Fig. 1 / Fig. 2 images include surrounding PDF paragraphs or other content rather than clean Figure panels. The intrinsic experimental plots become difficult to read when downscaled. These are actionable Figure selection/story layout deficiencies, **not** a scientific finding.
+- The engineering test story is deliberately lightweight and unreviewed; some repetition/weak narrative was caused by the provided test story, not proven to be a universal renderer defect.
+- Visual preview: [GitHub Actions artifact from run 42563311741](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42563311741/artifacts/13650362573) (labeled UNREVIEWED; not for publication).
 - Evidence: [GitHub Actions run 42562873652](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42562873652), `scvi-preprint-probe` job.
 
 ## Important scientific coverage gap
@@ -45,6 +48,8 @@ Current `ingest.CAPTION` recognizes only captions that start a PDF text block in
 | **P1** | Reliable source PDF acquisition | Differentiate `HTTP 200 text/html`, CAPTCHAs/403, invalid PDF, missing supplement and true parser exceptions; offer manually supplied PDF as first-class offline route. |
 | **P1** | Full page source binding | Each claim and metric should point to the actual Figure panel, Table row, or text passage and PDF page. Validate page bounds and reject undeclared/contradictory references. |
 | **P1** | Cross-paper story / layout match | A 6-page methods article should use an appropriate concise story plan with tables, not fill a fixed number of cards by duplicating Figure assets or generic language. Keep recommended 8–10 as flexible rather than target-driven. |
+| **P0** | PDF candidate crop contamination | Current scan's page-top-to-caption heuristic captured unrelated paragraphs beside the actual scVI figures. Require figure-visual bounding-box and crop identity checks before using in cards; keep candidate flags until reviewed. |
+| **P1** | Narrative density and readability | Avoid four repetitive four-step navigation boards for short method papers. Spend card space on actual comparisons, Figures/Tables and the next question; adjust font sizes/whitespace based on evidence, not a fixed card quota. |
 | **P1** | Stronger visual QA | Export to true PowerPoint/LibreOffice-rendered PDF and 1080×1440 PNG, inspect all cards for clipping/font-substitution and 400px mobile readability; geometry-only QA is insufficient. |
 | **P2** | Controlled regression corpus | Include at least three genuine papers with different layouts (method with tables, wet-lab with multi-panels, spatial-omics with tissue images), with SHA-pinned reference PDFs and reviewed ground-truth manifests. Avoid publishing restricted source PDFs. |
 | **P2** | UX and trust labeling | Explain `candidate PDF index` ≠ `scientific review` ≠ `visually accepted card`, and separate renderer errors from source/access blockers. |
@@ -53,7 +58,7 @@ Current `ingest.CAPTION` recognizes only captions that start a PDF text block in
 
 - **scVI: ENGINEERING_PARTIAL_PASS** for true PDF acquisition, candidate Figure indexing, source crop, structural validation, and native editable PPTX creation.
 - **Celina: INPUT_BLOCKED**; no inferences about scientific/story/visual quality.
-- **Independent formal cross-paper science and mobile QA: NOT_DONE**.
+- **Independent formal cross-paper science and native Windows/mobile QA: NOT_DONE**.
 - **Do not tag public Beta or merge this test branch automatically.** A separate correction candidate must pass story/source review, output rendering, and visual verification before product changes go to `main`.
 
 Proposed next engineering batch: **Table coverage + exact Figure candidate review + robust document-source diagnostics**. Preserve working PFS bridge behavior and versioned science evidence.
