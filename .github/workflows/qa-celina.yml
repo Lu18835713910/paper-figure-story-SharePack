@@ -1,0 +1,33 @@
+name: Celina cross-paper standalone probe (isolated)
+on:
+  push:
+    branches: [qa/celina-crosspaper-20261109]
+    paths:
+      - 'qa/**'
+      - '.github/workflows/qa-celina.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  celina-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install -e .
+      - name: Run actual open-access second-paper PDF smoke test
+        run: |
+          python qa/celina_crosspaper_probe.py 2>&1 | tee celina_probe.log
+          exit ${PIPESTATUS[0]}
+      - name: Keep diagnostic logs only (not cropped scientific figures)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: celina-probe-log
+          path: celina_probe.log
+          if-no-files-found: warn
