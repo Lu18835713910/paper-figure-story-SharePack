@@ -262,6 +262,9 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
         elif layout_engine=='freeform':
             from .freeform import slides_freeform
             deck,geometry=slides_freeform(story,assets,root)
+        elif layout_engine=='editorial':
+            from .editorial import slides_editorial
+            deck,geometry=slides_editorial(story,assets,root)
         else:raise ContractError('LAYOUT_ENGINE_UNKNOWN')
     deck.save(pptpath)
     reports={'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
