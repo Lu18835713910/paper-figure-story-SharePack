@@ -165,8 +165,42 @@ def choose_composition(c,assets,root):
         return 'figure_pair'  # retain portrait panel; still warn on tiny wide panel
     return 'figure_stack' if stack_min>pair_min+.10 else 'figure_pair'
 
+def editorial_takeaway(sl,c,y,claims,metrics,limits):
+    """Reader-first synthesis/limits page, not the repetitive flow template.
+
+    Every observation, method, takeaway, limit, and numeric metric is printed.
+    If the content does not fit at mobile-friendly type sizes, fail rather than
+    clipping or shrinking it into unreadable text.
+    """
+    question=c.get('question') or (claims[0]['question'] if claims else '')
+    def block(label,value,yy,sz=15.3,max_area=.92):
+        put(sl,label,L,yy,CONTENT_W,11.3,'royal',True,part='editorial_'+label)
+        start=yy+.34
+        h=text_h(value,CONTENT_W-.16,sz)
+        if h>max_area:
+            raise ContractError('EDITORIAL_REPLAN_TEXT_TOO_LONG:'+label)
+        put(sl,value,L+.04,start,CONTENT_W-.16,sz,'navy',max_h=max_area,part='editorial_body_'+label)
+        return start+h+.23
+    y=block('本卡要回答',question,max(2.38,y+.10),16.8,.97)
+    y=block('研究依据',c['method'],y,14.6,.81)
+    y=block('实际观察',c['observation'],y,14.6,.81)
+    if metrics:
+        for m in metrics:
+            value=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
+            y=block('关键数字',value,y,13.7,.85)
+    y=block('核心认识',c['takeaway'],y,16.6,.95)
+    if limits:
+        y=block('证据边界','；'.join(limits),y,13.7,.85)
+    if y>FOOT_Y-.06:
+        raise ContractError(f'EDITORIAL_REPLAN_PAGE_CAPACITY:{y:.2f}')
+    return y
+
+
 def navigation(sl,c,y,claims,metrics,limits):
     # Full research roadmap without forcing fixed 1:1 RSU-to-card structure.
+    if c.get('narrative_role') in ('synthesis','limits') and \
+       not c.get('figure_asset_ids'):
+        return editorial_takeaway(sl,c,y,claims,metrics,limits)
     question=c.get('question') or claims[0]['question']
     y=statement(sl,'核心问题',question,y)
     y=heading(sl,'科研逻辑 · 阅读导航',y+.08)
