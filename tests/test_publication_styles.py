@@ -120,6 +120,72 @@ class PublicationRender(unittest.TestCase):
         # Original first output does not change when the next run selects another journal.
         self.assertEqual(load(out/"publication_style.json")["style_id"],"journal-plos-computational-biology")
 
+    def test_logo_requires_documented_rights_and_exact_source(self):
+        # The test mark is a synthetic placeholder; never a real journal mark.
+        logo=self.root/"test_mark.png"
+        Image.new("RGB",(320,96),(90,90,90)).save(logo)
+        sha=digest(logo)
+        manifest={"contract":"sharepack-journal-logo-v1",
+            "style_id":"journal-plos-computational-biology",
+            "doi":"10.1371/journal.pcbi.1010000",
+            "source_type":"journal",
+            "publisher_name":"TEST ONLY — NOT PLOS",
+            "source_url":"https://example.org/fixture-test-mark",
+            "permission_evidence_url":"https://example.org/fixture-license",
+            "rights_basis":"written_permission",
+            "original_sha256":sha,"file":"test_mark.png"}
+        save(self.root/"logo.json",manifest)
+        st=copy.deepcopy(self.story)
+        st["paper"]["journal"]="PLOS Computational Biology"
+        st["paper"]["source_type"]="journal"
+        save(self.story_path,st)
+        qa=build(self.story_path,self.root/"assets"/"assets.json",self.root/"withlogo",
+                 render_png=False,logo_manifest_path=self.root/"logo.json")
+        self.assertEqual(qa["publication_logo"]["status"],"DISPLAYED_WITH_DOCUMENTED_PERMISSION")
+        self.assertEqual(qa["publication_logo"]["original_sha256"],sha)
+        from pptx import Presentation
+        deck=Presentation(self.root/"withlogo"/"SharePack_editable.pptx")
+        self.assertTrue(any(sh.shape_type==13 for sh in deck.slides[0].shapes))
+        # Explicitly missing rights must fail closed.
+        manifest["rights_basis"]="none"
+        save(self.root/"logo_bad.json",manifest)
+        with self.assertRaisesRegex(ContractError,"LOGO_PERMISSION_NOT_DOCUMENTED"):
+            build(self.story_path,self.root/"assets"/"assets.json",self.root/"reject",
+                  render_png=False,logo_manifest_path=self.root/"logo_bad.json")
+        # Publisher mismatch and byte drift are also blocking.
+        manifest["rights_basis"]="written_permission"
+        manifest["style_id"]="journal-nature-communications"
+        save(self.root/"logo_wrong.json",manifest)
+        with self.assertRaisesRegex(ContractError,"LOGO_PUBLICATION_STYLE_MISMATCH"):
+            build(self.story_path,self.root/"assets"/"assets.json",self.root/"reject2",
+                  render_png=False,logo_manifest_path=self.root/"logo_wrong.json")
+        manifest["style_id"]="journal-plos-computational-biology"
+        manifest["original_sha256"]="0"*64
+        save(self.root/"logo_drift.json",manifest)
+        with self.assertRaisesRegex(ContractError,"LOGO_HASH_MISMATCH"):
+            build(self.story_path,self.root/"assets"/"assets.json",self.root/"reject3",
+                  render_png=False,logo_manifest_path=self.root/"logo_drift.json")
+
+    def test_preprint_cannot_be_rebranded_with_journal_logo(self):
+        logo=self.root/"pretend.png";Image.new("RGB",(320,96),"grey").save(logo)
+        manifest={"contract":"sharepack-journal-logo-v1",
+          "style_id":"journal-plos-computational-biology",
+          "source_type":"journal",
+          "doi":"10.1371/journal.pcbi.1010000",
+          "publisher_name":"TEST ONLY",
+          "source_url":"https://example.org/test",
+          "permission_evidence_url":"https://example.org/perm",
+          "rights_basis":"written_permission",
+          "file":logo.name,"original_sha256":digest(logo)}
+        save(self.root/"wrong_edition.json",manifest)
+        st=copy.deepcopy(self.story)
+        st["paper"]["source_type"]="preprint"
+        st["paper"]["preprint_server"]="arXiv"
+        save(self.story_path,st)
+        with self.assertRaisesRegex(ContractError,"LOGO_PUBLICATION_STYLE_MISMATCH"):
+            build(self.story_path,self.root/"assets"/"assets.json",self.root/"reject_preprint",
+                  render_png=False,logo_manifest_path=self.root/"wrong_edition.json")
+
     def test_source_index_hash_mismatch_rejected(self):
         bad=copy.deepcopy(self.idx);bad["pdf_sha256"]="z"*64
         save(self.root/"bad_index.json",bad)
