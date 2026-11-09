@@ -174,7 +174,7 @@ def image(sl,asset,root,x,y,w,h):
     with Image.open(p) as im:
         r=im.width/im.height
     # A neutral light artboard prevents low-contrast axes from disappearing on dark themes.
-    R.rect(sl,x,y,w,h,"light",rounded=True)
+    R.rect(sl,x,y,w,h,"FFFFFF",rounded=True)
     usable_h=h-.40
     iw=min(w-.16,usable_h*r)
     ih=iw/r
@@ -214,9 +214,10 @@ def evidence(sl,c,limits,metrics,assets,root,start):
         return y+rh+.09
 
     q=c.get("question") or c["observation"]
-    y=put(sl,"这张图回答什么？",X,start,CW,15.4,"royal",True,where="evidence_qtag")+.06
-    y=put(sl,q,X+.06,y,CW-.1,18.8,"navy",True,cap=.82,where="evidence_question")+.13
-    y=put(sl,"方法："+c["method"],X+.04,y,CW-.12,16.3,"muted",False,cap=.72,where="evidence_method")+.12
+    # Direct question and one-line method: avoid repeating title-like labels
+    # above the Figure when it must be large enough for mobile inspection.
+    y=put(sl,q,X+.04,start,CW-.10,19.2,"navy",True,cap=.85,where="evidence_question")+.08
+    y=put(sl,"方法："+c["method"],X+.04,y,CW-.12,16.5,"muted",False,cap=.72,where="evidence_method")+.09
 
     bottom_items=[
         ("观察结果",c["observation"],17.2),
@@ -229,7 +230,7 @@ def evidence(sl,c,limits,metrics,assets,root,start):
         bottom_items.append(("关键数字",v,16.8))
     need=sum(row_height(value,size)+.09 for _,value,size in bottom_items)+.15
     max_space=BOTTOM-y-need-.10
-    figure_h=min(4.6,max_space)
+    figure_h=min(5.05,max_space)
     if figure_h<2.0:
         raise ContractError("EDITORIAL_FIGURE_REPLAN_NO_SPACE:"+str(round(figure_h,2)))
 
