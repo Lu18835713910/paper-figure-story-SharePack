@@ -191,44 +191,64 @@ def image(sl,asset,root,x,y,w,h):
         "mobile_review_required":False,"slot":[round(x,3),round(y,3),round(w,3),round(h,3)]}
 
 def evidence(sl,c,limits,metrics,assets,root,start):
+    """Full-width scientific figure plus compact, readable source-linked explanation.
+
+    Uses actual content measurements for explanation rows. No auto font shrink,
+    cropped explanations or unreviewed scientific claims are invented.
+    """
     ids=c.get("figure_asset_ids",[])
     if not ids:
         return stacked_blocks(sl,c,limits,metrics,start,c.get("narrative_role","finding")),[]
     if len(ids)>2:
         raise ContractError("EDITORIAL_REPLAN_MAX_TWO_FIGURES")
-    # Evidence pages prioritize one large authentic image and readable axes.
+
+    def row_height(text,sz=17.4):
+        return max(.68,height(text,CW-1.37,sz)+.15)
+    def evidence_row(label,text,y,sz=17.4):
+        rh=row_height(text,sz)
+        if rh>1.12:
+            raise ContractError("EDITORIAL_EVIDENCE_REPLAN_TEXT:"+label)
+        R.rect(sl,X,y,.048,rh-.06,"royal")
+        put(sl,label,X+.11,y+.10,1.05,15.2,"royal",True,cap=rh-.10,where="evidence_label")
+        put(sl,text,X+1.32,y+.09,CW-1.37,sz,"navy",False,cap=rh-.10,where="evidence_text")
+        return y+rh+.09
+
     q=c.get("question") or c["observation"]
-    y=block(sl,"要看什么问题",q,start,pt=BODY,max_h=.94)
-    # Preserve method, result and limits without excessive stacked mini boxes.
-    y=block(sl,"作者怎么做",c["method"],y,pt=BODY,max_h=.91)
-    figure_y=y+.05
-    # Lower explanation has bounded, checked dimensions.
-    explanation=height(c["observation"],CW,17.4)+height(c["takeaway"],CW,18.2)
-    limh=height("；".join(limits),CW,16.9) if limits else 0
-    metric_h=sum(height(f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}",CW,17.4)+.45 for m in metrics)
-    reserve=.37+.25+explanation + (.41+limh if limits else 0) + metric_h
-    figure_h=min(4.5,BOTTOM-figure_y-reserve-.18)
+    y=put(sl,"这张图回答什么？",X,start,CW,15.4,"royal",True,where="evidence_qtag")+.06
+    y=put(sl,q,X+.06,y,CW-.1,18.8,"navy",True,cap=.82,where="evidence_question")+.13
+    y=put(sl,"方法："+c["method"],X+.04,y,CW-.12,16.3,"muted",False,cap=.72,where="evidence_method")+.12
+
+    bottom_items=[
+        ("观察结果",c["observation"],17.2),
+        ("核心发现",c["takeaway"],18.0),
+    ]
+    if limits:
+        bottom_items.append(("证据边界","；".join(limits),16.4))
+    for m in metrics:
+        v=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
+        bottom_items.append(("关键数字",v,16.8))
+    need=sum(row_height(value,size)+.09 for _,value,size in bottom_items)+.15
+    max_space=BOTTOM-y-need-.10
+    figure_h=min(4.6,max_space)
     if figure_h<2.0:
-        raise ContractError("EDITORIAL_FIGURE_REPLAN_NO_SPACE")
+        raise ContractError("EDITORIAL_FIGURE_REPLAN_NO_SPACE:"+str(round(figure_h,2)))
+
     pics=[]
     if len(ids)==1:
-        pics.append(image(sl,assets[ids[0]],root,X,figure_y,CW,figure_h))
+        pics.append(image(sl,assets[ids[0]],root,X,y,CW,figure_h))
     else:
-        # Keep both source figures only when readable at full width, stacked.
-        h=(figure_h-.15)/2
-        if h<1.75:raise ContractError("EDITORIAL_TWO_FIGURES_REPLAN")
-        pics.append(image(sl,assets[ids[0]],root,X,figure_y,CW,h))
-        pics.append(image(sl,assets[ids[1]],root,X,figure_y+h+.15,CW,h))
-    y=figure_y+figure_h+.20
-    y=block(sl,"观察结果",c["observation"],y,pt=17.4,max_h=.84)
-    y=block(sl,"最重要的发现",c["takeaway"],y,pt=18.2,max_h=.89)
-    if limits:y=block(sl,"证据边界","；".join(limits),y,pt=16.9,max_h=.77)
-    for m in metrics:
-        val=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
-        y=block(sl,"关键数字",val,y,pt=17.4,max_h=.91)
+        hh=(figure_h-.14)/2
+        if hh<1.85:
+            raise ContractError("EDITORIAL_TWO_FIGURES_REPLAN")
+        pics.append(image(sl,assets[ids[0]],root,X,y,CW,hh))
+        pics.append(image(sl,assets[ids[1]],root,X,y+hh+.14,CW,hh))
+    y+=figure_h+.15
+    for label,value,sz in bottom_items:
+        y=evidence_row(label,value,y,sz)
     if y>BOTTOM:
-        raise ContractError("EDITORIAL_REPLAN_EVIDENCE:"+str(y))
+        raise ContractError("EDITORIAL_REPLAN_EVIDENCE:"+str(round(y,2)))
     return y,pics
+
 
 def slides_editorial(story,assets,root):
     prs=Presentation()
