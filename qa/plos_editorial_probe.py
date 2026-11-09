@@ -17,6 +17,7 @@ from PIL import Image,ImageDraw
 from sharepack.ingest import inspect_pdf,extract_regions
 from sharepack.common import save,digest
 from sharepack.render import build
+from sharepack.publisher_figures import fetch_plos_original_figure
 
 DOI="10.1371/journal.pcbi.1012818"
 URLS=[
@@ -66,6 +67,17 @@ def test():
    (root/"assets").mkdir();save(root/"assets"/"assets.json",assets)
   figure_ids=[x["id"] for x in assets["assets"]]
   report["unreviewed_asset_count"]=len(figure_ids)
+  if figure_ids:
+   original=fetch_plos_original_figure(doi=DOI,figure_num=1,
+      source_pdf_sha256=digest(pdf),pdf_page=reg[0]["pdf_page"],outdir=root/"assets")
+   assets["assets"][0]=original
+   save(root/"assets"/"assets.json",assets)
+   figure_ids=[x["id"] for x in assets["assets"]]
+   report["publisher_original_figure"]={
+      "source_url":original["source_url"],"sha256":original["sha256"],
+      "pixel_dimensions":original["pixel_dimensions"],
+      "review_status":original["review_status"],"content_changed":False
+   }
 
   cards=[];claims=[];sources=[]
   stages=["研究问题","理论框架","模型设定","方法比较","案例分析","适用条件","结果含义","证据边界"]
