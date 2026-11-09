@@ -73,11 +73,12 @@ def top(sl,c,i,n):
 def bottom(sl,story):
     rule(sl,9.26)
     paper=story["paper"]
-    cite=f"{paper['authors_short']}  |  {paper.get('journal','')}  |  DOI {paper['doi']}"
-    # Footer must remain; not part of phone-size main narrative.
-    put(sl,cite,X,9.36,CW,10.7,"muted",cap=.23,where="citation")
-    put(sl,"SharePack  ·  Independent research communication, not publisher-affiliated",
-        X,9.66,CW,10.5,"royal",cap=.23,where="independence")
+    cite=f"{paper['authors_short']}  |  DOI {paper['doi']}"
+    # Journal is already identified in the masthead; keep short source citation
+    # at the bottom rather than squeezing two or three unreadable text lines.
+    put(sl,cite,X,9.36,CW,10.7,"muted",cap=.31,where="citation")
+    put(sl,"SharePack · Independent research notes · not publisher-affiliated",
+        X,9.68,CW,10.5,"royal",cap=.32,where="independence")
 
 def block(sl,label,content,y,*,main=False,pt=BODY,max_h=1.05):
     if not str(content).strip():
