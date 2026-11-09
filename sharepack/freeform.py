@@ -15,6 +15,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from .common import ContractError, within
 from . import render as R
 from .publication_styles import current_style
+from .brand_assets import current_logo
 
 W,H=7.5,10.0
 L,RIGHT=.48,7.02
@@ -46,7 +47,13 @@ def stripe(sl,y,color='royal'): R.rect(sl,L,y,.055,.35,color)
 def intro(sl,card,idx,total):
     R.rect(sl,0,0,W,H,'bg')
     R.rect(sl,0,0,W,.055,'navy')
-    put(sl,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),L,.21,5.48,10.2,'royal',True,part='masthead')
+    logo=current_logo()
+    if logo is not None:
+        # Add the original logo at its native aspect ratio, never recolor or crop.
+        R.embed_authorized_logo(sl, logo, L,.13,1.22,.43)
+        put(sl,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),1.83,.21,4.07,9.2,'royal',True,part='masthead')
+    else:
+        put(sl,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),L,.21,5.48,10.2,'royal',True,part='masthead')
     put(sl,f'{idx:02d} / {total:02d}',6.10,.21,.9,10.4,'muted',part='counter',align=PP_ALIGN.RIGHT)
     line(sl,L,.62,CONTENT_W)
     stage=str(card['stage'])
