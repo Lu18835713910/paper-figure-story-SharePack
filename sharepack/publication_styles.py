@@ -156,10 +156,14 @@ def select_style(paper):
     doi = str(paper.get("doi") or "").strip()
     doc_hint = paper.get("publication_hint")
     hint = doc_hint if isinstance(doc_hint, dict) else {}
+    hint_journal = False
+    hint_preprint = False
     if not journal and hint.get("source_type") == "journal":
         journal = str(hint.get("journal") or "").strip()
+        hint_journal = bool(journal)
     if not source_name and hint.get("source_type") == "preprint":
         source_name = str(hint.get("preprint_server") or "").strip()
+        hint_preprint = bool(source_name)
     preprint_marked = (_is_preprint(journal) or _is_preprint(source_name) or
                        doi.casefold().startswith("10.48550/arxiv.") or
                        doi.casefold().startswith("10.1101/"))
@@ -167,14 +171,15 @@ def select_style(paper):
         is_arxiv = ("arxiv" in (source_name + " " + journal + " " + doi).casefold())
         sid = "preprint-arxiv" if is_arxiv else "preprint-neutral"
         return StyleSelection(sid, PROFILES[sid]["display"], journal, "preprint",
-                              "explicit_source_type" if source_type else "preprint_identifier",
-                              "ROUTED", "Preprint edition; do not claim a later journal layout.")
+                              "explicit_source_type" if source_type else "pdf_header_hint" if hint_preprint else "preprint_identifier",
+                              "CANDIDATE_REQUIRES_VERIFICATION" if hint_preprint and not source_type else "ROUTED",
+                              "Preprint edition; verify PDF first-page source and do not claim a later journal layout.")
     if journal or source_type == "journal":
         sid = _mapped_journal(journal)
         return StyleSelection(sid, PROFILES[sid]["display"], journal, "journal",
-                              "explicit_journal_metadata" if journal else "explicit_source_type",
-                              "ROUTED" if journal else "FALLBACK_UNKNOWN_JOURNAL",
-                              "Style inspiration only; journal name is not publisher approval.")
+                              "pdf_header_hint" if hint_journal else "explicit_journal_metadata" if journal else "explicit_source_type",
+                              "CANDIDATE_REQUIRES_VERIFICATION" if hint_journal else "ROUTED" if journal else "FALLBACK_UNKNOWN_JOURNAL",
+                              "Verify journal source from the uploaded PDF; design inspiration is not publisher approval.")
     return StyleSelection("preprint-neutral", PROFILES["preprint-neutral"]["display"],
                           "", "preprint", "journal_metadata_missing", "FALLBACK",
                           "No confirmed journal in source metadata; use neutral preprint style.")
