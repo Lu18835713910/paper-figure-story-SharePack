@@ -140,7 +140,7 @@ def framework(sl,c,limits,metrics,start):
         R.rect(sl,X,y,.052,rh-.04,"royal" if accent else "border")
         put(sl,label,X+.12,y+.10,labelw,15.2,"royal",True,cap=rh-.10,where="framework_label")
         put(sl,val,X+1.94,y+.10,textw,17.1,"navy",accent,cap=rh-.10,where="framework_value")
-        return y+rh+.11
+        return y+rh+.08
     y=row("核心科学问题",c.get("question") or c["observation"],start,accent=True)
     y=row("研究策略",c["method"],y)
     steps=c.get("flow_steps") or []
@@ -152,11 +152,11 @@ def framework(sl,c,limits,metrics,start):
         cellw=(CW-gap)/2
         for j,step in enumerate(steps):
             ix=j%2;iy=j//2
-            xx=X+ix*(cellw+gap); yy=y+iy*.87
-            R.rect(sl,xx,yy,cellw,.74,["light","mint","peach","light"][j],rounded=True)
+            xx=X+ix*(cellw+gap); yy=y+iy*.79
+            R.rect(sl,xx,yy,cellw,.71,["light","mint","peach","light"][j],rounded=True)
             put(sl,f"{j+1:02d}",xx+.14,yy+.17,.43,16.0,"royal",True,cap=.45,where="step_number")
             put(sl,step,xx+.66,yy+.13,cellw-.78,17.2,"navy",True,cap=.53,where="step")
-        y+=math.ceil(len(steps)/2)*.87+.17
+        y+=math.ceil(len(steps)/2)*.79+.10
     y=row("实际观察",c["observation"],y)
     y=row("核心认识",c["takeaway"],y,accent=True)
     if limits:
