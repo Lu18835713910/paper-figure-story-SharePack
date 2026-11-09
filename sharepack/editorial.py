@@ -91,7 +91,7 @@ def block(sl,label,content,y,*,main=False,pt=BODY,max_h=1.05):
     if h>max_h+.01:
         raise ContractError("EDITORIAL_REPLAN_BLOCK:"+label+":"+str(round(h,2)))
     yy=put(sl,content,X+.06,yy,CW-.11,sz,"navy",main,cap=max_h,where=label+"_content")
-    return yy+.25
+    return yy+.20
 
 def stacked_blocks(sl,card,limits,metrics,start,role):
     y=start
