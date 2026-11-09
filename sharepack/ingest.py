@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 import fitz
 from .common import ContractError,digest,save
+from .publication_styles import detect_publication_hint
 
 CAPTION=re.compile(r'^\s*Fig(?:ure)?\.?\s*(\d+)\s*[.:|]\s*',re.I)
 
@@ -18,7 +19,8 @@ def inspect_pdf(pdf,outdir):
     if doc.is_encrypted:raise ContractError('PDF_ENCRYPTED')
     psha=digest(pdf)
     results={'contract':'sharepack-pdf-index-v1','pdf_name':pdf.name,'pdf_sha256':psha,'pages':len(doc),
-             'science_review':'NOT_PERFORMED','figures':[], 'page_text':[]}
+             'science_review':'NOT_PERFORMED','figures':[], 'page_text':[],
+             'publication_hint':detect_publication_hint(doc[0].get_text('text') if len(doc) else '')}
     text_dir=outdir/'_cache'/'text';text_dir.mkdir(parents=True,exist_ok=True)
     region_dir=outdir/'_cache'/'candidate_figures';region_dir.mkdir(parents=True,exist_ok=True)
     for pi,page in enumerate(doc):
