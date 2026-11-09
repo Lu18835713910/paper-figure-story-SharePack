@@ -36,6 +36,9 @@ jobs:
             sudo apt-get update -qq
             sudo apt-get install -y -qq libreoffice-impress fonts-noto-cjk
           fi
+      - name: Inspect publisher-original Figure image URLs
+        if: matrix.label == 'plos-editorial'
+        run: python qa/plos_official_figure_probe.py
       - name: Run actual article + editable PPTX + exported PDF / PNG
         shell: bash
         run: |
