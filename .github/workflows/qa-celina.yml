@@ -40,11 +40,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install package and test scVI article PDF
+      - name: Install package, renderer and test scVI article PDF
         run: |
           python -m pip install -e .
+          if ! command -v libreoffice >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq libreoffice-impress fonts-noto-cjk
+          fi
           python qa/scvi_crosspaper_probe.py 2>&1 | tee scvi_probe.log
           exit ${PIPESTATUS[0]}
+      - name: Upload unreviewed visual contact sheet (not a final scientific result)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scvi-qa-visual-preview-unreviewed
+          path: qa_preview/scvi_unreviewed_contact_sheet.png
+          if-no-files-found: warn
       - name: Upload diagnostic log, no cropped figures
         if: always()
         uses: actions/upload-artifact@v4
