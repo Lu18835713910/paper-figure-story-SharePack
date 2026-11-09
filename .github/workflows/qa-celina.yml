@@ -31,3 +31,24 @@ jobs:
           name: celina-probe-log
           path: celina_probe.log
           if-no-files-found: warn
+
+  scvi-preprint-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and test scVI article PDF
+        run: |
+          python -m pip install -e .
+          python qa/scvi_crosspaper_probe.py 2>&1 | tee scvi_probe.log
+          exit ${PIPESTATUS[0]}
+      - name: Upload diagnostic log, no cropped figures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scvi-probe-log
+          path: scvi_probe.log
+          if-no-files-found: warn
