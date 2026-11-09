@@ -185,7 +185,7 @@ def image(sl,asset,root,x,y,w,h):
     yy=y+(usable_h-ih)/2+.02
     sl.shapes.add_picture(str(p),Inches(xx),Inches(yy),width=Inches(iw),height=Inches(ih))
     cap=f"{asset['figure']} · PDF p.{asset.get('pdf_page','?')} · 原图待核验"
-    put(sl,cap,x+.10,y+h-.52,w-.16,16.3,"muted",cap=.47,where="figure_source")
+    put(sl,cap,x+.10,y+h-.52,w-.16,16.3,"263643",cap=.47,where="figure_source")
     return {"asset_id":asset["id"],"draw_width_in":round(iw,3),
         "draw_height_in":round(ih,3),"review_status":asset.get("review_status","PENDING"),
         "mobile_review_required":False,"slot":[round(x,3),round(y,3),round(w,3),round(h,3)]}
