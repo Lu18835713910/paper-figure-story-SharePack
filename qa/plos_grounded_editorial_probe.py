@@ -177,14 +177,14 @@ def test():
    # Package the actual editable artifact, PDF and 1080x1440 PNGs as a
    # temporary QA output, not a GitHub release or scientific publication.
    pack=preview/"plos_grounded_editorial_QA_full.zip"
-   attribution=("SCIENCE REVIEW PENDING / NOT AN OFFICIAL PLOS PRODUCT\\n"
-     "Article: Posfai et al. (2025), Gauge fixing for sequence-function relationships\\n"
-     "PLOS Computational Biology, DOI: "+DOI+"\\n"
-     "Source: https://doi.org/"+DOI+"\\n"
+   attribution=("SCIENCE REVIEW PENDING / NOT AN OFFICIAL PLOS PRODUCT\n"
+     "Article: Posfai et al. (2025), Gauge fixing for sequence-function relationships\n"
+     "PLOS Computational Biology, DOI: "+DOI+"\n"
+     "Source: https://doi.org/"+DOI+"\n"
      "Paper and Figure 1: CC BY 4.0 (original authors credited); original"
-     " standalone Figure obtained from publisher endpoint, unchanged image pixels.\\n"
-     "Card interpretations are unreviewed engineering test paraphrases.\\n"
-     "Do not use these cards as verified scientific explanations.\\n")
+     " standalone Figure obtained from publisher endpoint, unchanged image pixels.\n"
+     "Card interpretations are unreviewed engineering test paraphrases.\n"
+     "Do not use these cards as verified scientific explanations.\n")
    with zipfile.ZipFile(pack,"w",compression=zipfile.ZIP_DEFLATED) as z:
     z.writestr("READ_ME_FIRST.txt",attribution)
     for name in ("SharePack_editable.pptx","SharePack_editable.pdf",
