@@ -6,6 +6,7 @@ on:
       - 'sharepack/**'
       - 'qa/*publication_style_probe.py'
       - 'qa/plos_editorial_probe.py'
+      - 'qa/plos_grounded_editorial_probe.py'
       - '.github/workflows/qa-publication-styles.yml'
   workflow_dispatch:
 permissions:
@@ -24,6 +25,8 @@ jobs:
             script: qa/plos_publication_style_probe.py
           - label: plos-editorial
             script: qa/plos_editorial_probe.py
+          - label: plos-grounded-editorial
+            script: qa/plos_grounded_editorial_probe.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,4 +67,11 @@ jobs:
         with:
           name: plos-editorial-unreviewed-preview
           path: qa_preview/plos_editorial_test_contact_sheet.png
+          if-no-files-found: warn
+      - name: Upload paper-grounded editorial comparison (still unreviewed)
+        if: matrix.label == 'plos-grounded-editorial'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plos-grounded-editorial-preview-unreviewed
+          path: qa_preview/plos_grounded_editorial_contact_sheet.png
           if-no-files-found: warn
