@@ -69,7 +69,8 @@ def run():
   st={"contract":"sharepack-story-v1","pdf_sha256":digest(pdf),"paper":PAPER,
       "review_status":"PARTIAL","formal_ready":False,"profile":"standard",
       "sources":[],"claims":[],"cards":[],"required_figure_labels":[]}
-  for i,(role,stage,title,q,method,obs,take,limit) in enumerate(SPECS,1):
+  for i,(role,stage,title,method,obs,take,limit) in enumerate(SPECS,1):
+   q=title
    cid="C"+str(i);sid="S"+str(i)
    st["sources"].append({"id":sid,"pdf_page":min(len(doc),max(1,i))})
    st["claims"].append({"id":cid,"question":q,"method":method,"observation":obs,
