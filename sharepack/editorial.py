@@ -131,14 +131,15 @@ def framework(sl,c,limits,metrics,start):
     def row(label,val,y,*,accent=False):
         if not str(val).strip():
             return y
-        textw=CW-1.70
-        required=height(val,textw,17.1)
-        rh=max(.68,required+.18)
-        if rh>1.04:
+        labelw=1.73
+        textw=CW-2.00
+        required=max(height(label,labelw,15.2),height(val,textw,17.1))
+        rh=max(.73,required+.19)
+        if rh>1.08:
             raise ContractError("EDITORIAL_FRAMEWORK_ROW_REPLAN:"+label)
         R.rect(sl,X,y,.052,rh-.04,"royal" if accent else "border")
-        put(sl,label,X+.12,y+.13,1.46,15.2,"royal",True,cap=rh-.12,where="framework_label")
-        put(sl,val,X+1.67,y+.09,textw,17.1,"navy",accent,cap=rh-.11,where="framework_value")
+        put(sl,label,X+.12,y+.10,labelw,15.2,"royal",True,cap=rh-.10,where="framework_label")
+        put(sl,val,X+1.94,y+.10,textw,17.1,"navy",accent,cap=rh-.10,where="framework_value")
         return y+rh+.11
     y=row("核心科学问题",c.get("question") or c["observation"],start,accent=True)
     y=row("研究策略",c["method"],y)
