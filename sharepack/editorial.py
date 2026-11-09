@@ -209,7 +209,7 @@ def evidence(sl,c,limits,metrics,assets,root,start):
         if rh>1.12:
             raise ContractError("EDITORIAL_EVIDENCE_REPLAN_TEXT:"+label)
         R.rect(sl,X,y,.048,rh-.06,"royal")
-        short_label={"观察结果":"观察","核心发现":"发现","证据边界":"边界","关键数字":"数据"}.get(label,label)
+        short_label={"观察结果":"观察","核心发现":"发现","图示解读":"解读","证据边界":"边界","关键数字":"数据"}.get(label,label)
         put(sl,short_label,X+.11,y+.10,1.05,16.3,"royal",True,cap=rh-.10,where="evidence_label")
         put(sl,text,X+1.32,y+.09,CW-1.37,sz,"navy",False,cap=rh-.10,where="evidence_text")
         return y+rh+.09
@@ -220,10 +220,11 @@ def evidence(sl,c,limits,metrics,assets,root,start):
     y=put(sl,q,X+.04,start,CW-.10,19.2,"navy",True,cap=.85,where="evidence_question")+.08
     y=put(sl,"方法："+c["method"],X+.04,y,CW-.12,16.5,"muted",False,cap=.72,where="evidence_method")+.09
 
-    bottom_items=[
-        ("观察结果",c["observation"],17.2),
-        ("核心发现",c["takeaway"],18.0),
-    ]
+    # A source Figure card should make the data the main character.
+    # Join, but do not drop, observation and takeaway: the detailed analytical
+    # explanation can occupy the next story card when needed.
+    evidence_readout="观察："+c["observation"]+"；解读："+c["takeaway"]
+    bottom_items=[("图示解读",evidence_readout,17.2)]
     if limits:
         bottom_items.append(("证据边界","；".join(limits),16.4))
     for m in metrics:
