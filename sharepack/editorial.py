@@ -127,30 +127,46 @@ def stacked_blocks(sl,card,limits,metrics,start,role):
     return y
 
 def framework(sl,c,limits,metrics,start):
-    q=c.get("question") or c["observation"]
-    y=block(sl,"作者希望回答",q,start,main=True,max_h=1.22)
-    y=block(sl,"研究策略",c["method"],y,max_h=1.0)
+    """Compact editorial framework with two-column steps, never a full-page cloned flowchart."""
+    def row(label,val,y,*,accent=False):
+        if not str(val).strip():
+            return y
+        textw=CW-1.70
+        required=height(val,textw,17.1)
+        rh=max(.68,required+.18)
+        if rh>1.04:
+            raise ContractError("EDITORIAL_FRAMEWORK_ROW_REPLAN:"+label)
+        R.rect(sl,X,y,.052,rh-.04,"royal" if accent else "border")
+        put(sl,label,X+.12,y+.13,1.46,15.2,"royal",True,cap=rh-.12,where="framework_label")
+        put(sl,val,X+1.67,y+.09,textw,17.1,"navy",accent,cap=rh-.11,where="framework_value")
+        return y+rh+.11
+    y=row("核心科学问题",c.get("question") or c["observation"],start,accent=True)
+    y=row("研究策略",c["method"],y)
     steps=c.get("flow_steps") or []
     if steps:
         if len(steps)>4:
             raise ContractError("EDITORIAL_FRAMEWORK_STEPS_MAX_4")
-        # The only layout role where ordered nodes are helpful.
-        y=put(sl,"证据推进",X,y,CW,LABEL,"royal",True,where="flowheading")+.12
+        y=put(sl,"研究证据如何推进",X,y+.02,CW,16.2,"royal",True,where="flowheading")+.12
+        gap=.17
+        cellw=(CW-gap)/2
         for j,step in enumerate(steps):
-            yy=y+j*.74
-            R.rect(sl,X,yy,CW,.64,"light",rounded=True)
-            put(sl,f"{j+1:02d}",X+.17,yy+.12,.52,17.5,"royal",True,cap=.34,where="flownum")
-            put(sl,step,X+.78,yy+.12,CW-1.02,18.0,"navy",True,cap=.39,where="flowstep")
-        y+=len(steps)*.74+.20
-    y=block(sl,"得到的观察",c["observation"],y,max_h=.88)
-    y=block(sl,"新的认识",c["takeaway"],y,max_h=1.0)
-    if limits:y=block(sl,"还需验证","；".join(limits),y,max_h=.87)
+            ix=j%2;iy=j//2
+            xx=X+ix*(cellw+gap); yy=y+iy*.87
+            R.rect(sl,xx,yy,cellw,.74,["light","mint","peach","light"][j],rounded=True)
+            put(sl,f"{j+1:02d}",xx+.14,yy+.17,.43,16.0,"royal",True,cap=.45,where="step_number")
+            put(sl,step,xx+.66,yy+.13,cellw-.78,17.2,"navy",True,cap=.53,where="step")
+        y+=math.ceil(len(steps)/2)*.87+.17
+    y=row("实际观察",c["observation"],y)
+    y=row("核心认识",c["takeaway"],y,accent=True)
+    if limits:
+        y=row("证据边界","；".join(limits),y)
     for m in metrics:
         val=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
-        y=block(sl,"关键数字",val,y,max_h=.88)
+        y=row("关键数字",val,y)
     if y>BOTTOM:
-        raise ContractError("EDITORIAL_REPLAN_FRAMEWORK:"+str(y))
+        raise ContractError("EDITORIAL_REPLAN_FRAMEWORK:"+str(round(y,2)))
     return y
+
 
 def image(sl,asset,root,x,y,w,h):
     p=within(root,Path(root)/asset["path"])
