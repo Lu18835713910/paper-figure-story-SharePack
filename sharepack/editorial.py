@@ -1,0 +1,247 @@
+"""Large-type, journal-edition editorial layout for source-linked story cards.
+
+In contrast to freeform, this engine uses a small set of narrative roles rather
+than reusing one flowchart. It does not invent claims, crop source figures, hide
+metrics, or reduce text size to force a page to pass. It is an opt-in QA engine.
+"""
+from __future__ import annotations
+import math
+from pathlib import Path
+
+from PIL import Image
+from pptx import Presentation
+from pptx.util import Inches
+from pptx.enum.text import PP_ALIGN
+
+from .common import ContractError, within
+from .publication_styles import current_style
+from .brand_assets import current_logo
+from . import render as R
+
+W,H = 7.5,10.0
+X,RIGHT = .50,7.00
+CW=RIGHT-X
+BOTTOM=9.18
+BODY=17.4
+LABEL=17.0
+
+def weight_len(s):
+    return R._cell_len(str(s))
+
+def height(s,w,pt,*,line_spacing=1.22):
+    if not str(s).strip():
+        return .0
+    p=max(1.,w*72/(pt*1.16))
+    lines=sum(max(1,math.ceil(weight_len(t)/p)) for t in str(s).split("\n"))
+    return lines*pt*line_spacing/72+.10
+
+def put(sl,value,x,y,w,pt=BODY,color="navy",bold=False,*,cap=None,where="body",align=PP_ALIGN.LEFT):
+    if not str(value).strip():
+        return y
+    h=height(value,w,pt)
+    if cap is not None and h>cap+.01:
+        raise ContractError("EDITORIAL_CONTENT_REPLAN:"+where+":"+str(round(h,2))+">"+str(cap))
+    R._checked_text(sl,value,x,y,w,h,pt,color,bold,align,label="editorial_"+where)
+    return y+h
+
+def rule(sl,y):
+    R.rect(sl,X,y,CW,.017,"border")
+
+def top(sl,c,i,n):
+    R.rect(sl,0,0,W,H,"bg")
+    R.rect(sl,0,0,.085,H,"royal")
+    logo=current_logo()
+    if logo is not None:
+        R.embed_authorized_logo(sl,logo,X,.22,1.16,.47)
+        x=1.83;mw=4.15
+    else:
+        x=X;mw=5.47
+    masthead=current_style().masthead if current_style() else "SHAREPACK / RESEARCH NOTES"
+    put(sl,masthead,x,.23,mw,12.0,"royal",True,cap=.37,where="masthead")
+    put(sl,f"{i:02d} / {n:02d}",6.12,.23,.84,12.0,"muted",cap=.37,where="counter",align=PP_ALIGN.RIGHT)
+    rule(sl,.76)
+    stage=str(c["stage"]).upper()
+    put(sl,stage,X,.94,CW,15.0,"royal",True,cap=.38,where="stage")
+    title=str(c["title"])
+    size=27 if weight_len(title)>29 else 30
+    y=put(sl,title,X,1.36,CW,size,"navy",True,cap=1.24,where="title")
+    y=put(sl,c["intro"],X,y+.14,CW,17.1,"muted",cap=.92,where="intro")
+    if y>3.08:
+        raise ContractError("EDITORIAL_HEADER_NEEDS_REPLAN")
+    return max(2.77,y+.12)
+
+def bottom(sl,story):
+    rule(sl,9.26)
+    paper=story["paper"]
+    cite=f"{paper['authors_short']}  |  {paper.get('journal','')}  |  DOI {paper['doi']}"
+    # Footer must remain; not part of phone-size main narrative.
+    put(sl,cite,X,9.36,CW,10.7,"muted",cap=.23,where="citation")
+    put(sl,"SharePack  ·  Independent research communication, not publisher-affiliated",
+        X,9.66,CW,10.5,"royal",cap=.23,where="independence")
+
+def block(sl,label,content,y,*,main=False,pt=BODY,max_h=1.05):
+    if not str(content).strip():
+        return y
+    # Labels are first-class visible text, not tiny captions.
+    yy=put(sl,label,X,y,CW,LABEL,"royal",True,cap=.42,where=label+"_label")
+    yy+=.10
+    sz=21.5 if main else pt
+    h=height(content,CW-.10,sz)
+    if h>max_h+.01:
+        raise ContractError("EDITORIAL_REPLAN_BLOCK:"+label+":"+str(round(h,2)))
+    yy=put(sl,content,X+.06,yy,CW-.11,sz,"navy",main,cap=max_h,where=label+"_content")
+    return yy+.25
+
+def stacked_blocks(sl,card,limits,metrics,start,role):
+    y=start
+    q=card.get("question") or card["observation"]
+    if role=="cover":
+        # Main scientific question = visual anchor, not a four-box diagram.
+        y=block(sl,"核心科学问题",q,y,main=True,pt=23.0,max_h=1.55)
+        rule(sl,y+.05);y+=.30
+        y=block(sl,"研究采用什么方法",card["method"],y,max_h=1.05)
+        y=block(sl,"目前观察",card["observation"],y,max_h=1.05)
+        y=block(sl,"这篇文章想说明",card["takeaway"],y,main=True,max_h=1.25)
+    elif role=="limits":
+        y=block(sl,"哪些结论获得支持",card["observation"],y,main=True,max_h=1.50)
+        y=block(sl,"目前还不能证明", "；".join(limits) or card["takeaway"],y,main=True,max_h=1.50)
+        y=block(sl,"接下来如何核实",card["method"],y,max_h=1.15)
+        y=block(sl,"如何正确理解",card["takeaway"],y,max_h=1.10)
+    elif role=="synthesis":
+        y=block(sl,"最重要的发现",card["takeaway"],y,main=True,max_h=1.50)
+        y=block(sl,"研究依据",card["method"],y,max_h=1.10)
+        y=block(sl,"实际观察",card["observation"],y,max_h=1.10)
+        if limits:y=block(sl,"证据边界","；".join(limits),y,max_h=1.10)
+    else:
+        y=block(sl,"研究问题",q,y,main=True,max_h=1.35)
+        y=block(sl,"实验或分析方法",card["method"],y,max_h=1.15)
+        y=block(sl,"观察到什么",card["observation"],y,max_h=1.15)
+        y=block(sl,"科学含义",card["takeaway"],y,main=True,max_h=1.35)
+        if limits:y=block(sl,"证据边界","；".join(limits),y,max_h=1.0)
+    for m in metrics:
+        val=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
+        y=block(sl,"关键数字",val,y,max_h=1.15)
+    if y>BOTTOM:
+        raise ContractError(f"EDITORIAL_REPLAN_PAGE:{role}:{y:.2f}")
+    return y
+
+def framework(sl,c,limits,metrics,start):
+    q=c.get("question") or c["observation"]
+    y=block(sl,"作者希望回答",q,start,main=True,max_h=1.22)
+    y=block(sl,"研究策略",c["method"],y,max_h=1.0)
+    steps=c.get("flow_steps") or []
+    if steps:
+        if len(steps)>4:
+            raise ContractError("EDITORIAL_FRAMEWORK_STEPS_MAX_4")
+        # The only layout role where ordered nodes are helpful.
+        y=put(sl,"证据推进",X,y,CW,LABEL,"royal",True,where="flowheading")+.12
+        for j,step in enumerate(steps):
+            yy=y+j*.74
+            R.rect(sl,X,yy,CW,.64,"light",rounded=True)
+            put(sl,f"{j+1:02d}",X+.17,yy+.12,.52,17.5,"royal",True,cap=.34,where="flownum")
+            put(sl,step,X+.78,yy+.12,CW-1.02,18.0,"navy",True,cap=.39,where="flowstep")
+        y+=len(steps)*.74+.20
+    y=block(sl,"得到的观察",c["observation"],y,max_h=.88)
+    y=block(sl,"新的认识",c["takeaway"],y,max_h=1.0)
+    if limits:y=block(sl,"还需验证","；".join(limits),y,max_h=.87)
+    for m in metrics:
+        val=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
+        y=block(sl,"关键数字",val,y,max_h=.88)
+    if y>BOTTOM:
+        raise ContractError("EDITORIAL_REPLAN_FRAMEWORK:"+str(y))
+    return y
+
+def image(sl,asset,root,x,y,w,h):
+    p=within(root,Path(root)/asset["path"])
+    with Image.open(p) as im:
+        r=im.width/im.height
+    # A neutral light artboard prevents low-contrast axes from disappearing on dark themes.
+    R.rect(sl,x,y,w,h,"light",rounded=True)
+    usable_h=h-.40
+    iw=min(w-.16,usable_h*r)
+    ih=iw/r
+    if iw<1.4 or ih<1.6:
+        # Reject very small source figure views rather than pretending they are readable.
+        raise ContractError("EDITORIAL_FIGURE_REPLAN_UNREADABLE:"+asset["id"])
+    xx=x+(w-iw)/2
+    yy=y+(usable_h-ih)/2+.02
+    sl.shapes.add_picture(str(p),Inches(xx),Inches(yy),width=Inches(iw),height=Inches(ih))
+    cap=f"{asset['figure']} · PDF p.{asset.get('pdf_page','?')} · 未经独立图像审核"
+    put(sl,cap,x+.10,y+h-.33,w-.16,11.2,"muted",cap=.24,where="figure_source")
+    return {"asset_id":asset["id"],"draw_width_in":round(iw,3),
+        "draw_height_in":round(ih,3),"review_status":asset.get("review_status","PENDING"),
+        "mobile_review_required":False,"slot":[round(x,3),round(y,3),round(w,3),round(h,3)]}
+
+def evidence(sl,c,limits,metrics,assets,root,start):
+    ids=c.get("figure_asset_ids",[])
+    if not ids:
+        return stacked_blocks(sl,c,limits,metrics,start,c.get("narrative_role","finding")),[]
+    if len(ids)>2:
+        raise ContractError("EDITORIAL_REPLAN_MAX_TWO_FIGURES")
+    # Evidence pages prioritize one large authentic image and readable axes.
+    q=c.get("question") or c["observation"]
+    y=block(sl,"要看什么问题",q,start,pt=BODY,max_h=.94)
+    # Preserve method, result and limits without excessive stacked mini boxes.
+    y=block(sl,"作者怎么做",c["method"],y,pt=BODY,max_h=.91)
+    figure_y=y+.05
+    # Lower explanation has bounded, checked dimensions.
+    explanation=height(c["observation"],CW,17.4)+height(c["takeaway"],CW,18.2)
+    limh=height("；".join(limits),CW,16.9) if limits else 0
+    metric_h=sum(height(f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}",CW,17.4)+.45 for m in metrics)
+    reserve=.37+.25+explanation + (.41+limh if limits else 0) + metric_h
+    figure_h=min(4.5,BOTTOM-figure_y-reserve-.18)
+    if figure_h<2.0:
+        raise ContractError("EDITORIAL_FIGURE_REPLAN_NO_SPACE")
+    pics=[]
+    if len(ids)==1:
+        pics.append(image(sl,assets[ids[0]],root,X,figure_y,CW,figure_h))
+    else:
+        # Keep both source figures only when readable at full width, stacked.
+        h=(figure_h-.15)/2
+        if h<1.75:raise ContractError("EDITORIAL_TWO_FIGURES_REPLAN")
+        pics.append(image(sl,assets[ids[0]],root,X,figure_y,CW,h))
+        pics.append(image(sl,assets[ids[1]],root,X,figure_y+h+.15,CW,h))
+    y=figure_y+figure_h+.20
+    y=block(sl,"观察结果",c["observation"],y,pt=17.4,max_h=.84)
+    y=block(sl,"最重要的发现",c["takeaway"],y,pt=18.2,max_h=.89)
+    if limits:y=block(sl,"证据边界","；".join(limits),y,pt=16.9,max_h=.77)
+    for m in metrics:
+        val=f"{m['label']}：{m['value']}｜{m['definition']}；对照：{m['comparison']}"
+        y=block(sl,"关键数字",val,y,pt=17.4,max_h=.91)
+    if y>BOTTOM:
+        raise ContractError("EDITORIAL_REPLAN_EVIDENCE:"+str(y))
+    return y,pics
+
+def slides_editorial(story,assets,root):
+    prs=Presentation()
+    prs.slide_width=Inches(W)
+    prs.slide_height=Inches(H)
+    aa={a["id"]:a for a in assets["assets"]}
+    cs={c["id"]:c for c in story["claims"]}
+    geometry=[]
+    for i,c in enumerate(story["cards"],1):
+        sl=prs.slides.add_slide(prs.slide_layouts[6])
+        y=top(sl,c,i,len(story["cards"]))
+        chosen=[cs[k] for k in c["claim_ids"]]
+        mets=[m for claim in chosen for m in claim.get("metrics",[])]
+        limits=list(dict.fromkeys(q["limit"] for q in chosen if q.get("limit")))
+        role=c.get("narrative_role") or "finding"
+        try:
+            if c.get("figure_asset_ids"):
+                last,pics=evidence(sl,c,limits,mets,aa,root,y)
+                layout="editorial_evidence"
+            elif role=="framework":
+                last=framework(sl,c,limits,mets,y)
+                pics=[]
+                layout="editorial_framework"
+            else:
+                last=stacked_blocks(sl,c,limits,mets,y,role)
+                pics=[]
+                layout="editorial_"+role
+        except ContractError as ex:
+            raise ContractError(f"CARD_{i}:{ex}") from ex
+        bottom(sl,story)
+        geometry.append({"card":i,"layout_type":layout,"content_end":round(last,3),
+            "evidence_figure_slots":pics,"visible_metric_count":len(mets),
+            "visible_limit_count":len(limits),"mobile_review_required":False})
+    return prs,geometry
