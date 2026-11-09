@@ -174,7 +174,7 @@ def slides(story,assets,root):
                   'synthesis' if ('结论' in stage or '综合' in stage or 'summary' in stage) else
                   'cover' if ('封面' in stage or '研究问题' in stage or 'cover' in stage) else 'evidence')
         rect(s,0,0,7.5,10,'bg');rect(s,0,0,7.5,.055,'navy')
-        _checked_text(s,'PFS / RESEARCH NOTES',.48,.24,4.3,.29,12.6,'royal',True,label='masthead')
+        _checked_text(s,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),.48,.24,5.50,.29,10.1,'royal',True,label='masthead')
         _checked_text(s,f'{num:02} / {len(story["cards"]):02}',6.19,.24,.78,.28,10.8,'muted',align=PP_ALIGN.RIGHT,label='counter')
         rect(s,.48,.70,6.52,.012,'border')
         rect(s,.48,.87,min(4.6,max(1.40,_cell_len(c['stage'])*.13+.32)),.33,'light',rounded=True)
@@ -211,7 +211,7 @@ def slides(story,assets,root):
         rect(s,.48,9.27,6.52,.013,'border')
         paper=story['paper'];footer=f"{paper['authors_short']} | {paper.get('journal','')} | DOI: {paper['doi']}"
         _checked_text(s,footer,.48,9.36,6.44,.24,8.9,'muted',label='citation')
-        _checked_text(s,'PFS SharePack · github.com/Lu18835713910/paper-figure-story',.48,9.63,6.43,.24,8.6,'royal',label='github')
+        _checked_text(s,'SharePack · Independent journal-inspired design, not publisher affiliated',.48,9.63,6.43,.24,8.1,'royal',label='github')
         geometry.append({'card':num,'layout_type':role,'evidence_figure_slots':fig_records,
                          'visible_metric_count':len(metrics),'visible_limit_count':len(limits),
                          'content_end':round(end,3),
