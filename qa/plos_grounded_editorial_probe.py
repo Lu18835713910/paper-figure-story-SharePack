@@ -142,7 +142,7 @@ def test():
       "source_ids":[sid],"required":True,"review_status":"PARTIAL"})
    ids_for_card=[figure_ids[0]] if i==4 and figure_ids else []
    cards.append({"order":i,"stage":stage,"title":title,
-      "intro":"Posfai 等｜PLOS Computational Biology（2025）",
+      "intro":"Posfai et al. · PLOS Comput Biol · 2025",
       "question":question,"method":method,"observation":observation,
       "takeaway":takeaway,"interpretation":takeaway,
       "narrative_role":role,
