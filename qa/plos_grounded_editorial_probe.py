@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import tempfile
+import zipfile
 import urllib.request
 from pathlib import Path
 
@@ -173,6 +174,27 @@ def test():
    draw.text((16,12),"PLOS / SOURCE-GROUNDED EDITORIAL / SCIENCE REVIEW PENDING",fill=(34,42,53))
    draw.text((16,45),"CC BY: Posfai et al. (2025), DOI "+DOI+" | NOT PUBLISHER OFFICIAL",fill=(34,42,53))
    canvas.save(preview/"plos_grounded_editorial_contact_sheet.png")
+   # Package the actual editable artifact, PDF and 1080x1440 PNGs as a
+   # temporary QA output, not a GitHub release or scientific publication.
+   pack=preview/"plos_grounded_editorial_QA_full.zip"
+   attribution=("SCIENCE REVIEW PENDING / NOT AN OFFICIAL PLOS PRODUCT\\n"
+     "Article: Posfai et al. (2025), Gauge fixing for sequence-function relationships\\n"
+     "PLOS Computational Biology, DOI: "+DOI+"\\n"
+     "Source: https://doi.org/"+DOI+"\\n"
+     "Paper and Figure 1: CC BY 4.0 (original authors credited); original"
+     " standalone Figure obtained from publisher endpoint, unchanged image pixels.\\n"
+     "Card interpretations are unreviewed engineering test paraphrases.\\n"
+     "Do not use these cards as verified scientific explanations.\\n")
+   with zipfile.ZipFile(pack,"w",compression=zipfile.ZIP_DEFLATED) as z:
+    z.writestr("READ_ME_FIRST.txt",attribution)
+    for name in ("SharePack_editable.pptx","SharePack_editable.pdf",
+                 "qa_report.json","card_source_map.json","publication_style.json"):
+     fpath=root/"render"/name
+     if fpath.exists():z.write(fpath,name)
+    for card in sorted((root/"render"/"cards").glob("*.png")):
+     z.write(card,"cards/"+card.name)
+   report["qa_delivery"]={"file":pack.name,"png_count":len(list((root/"render"/"cards").glob("*.png"))),
+       "scientific_review":"PENDING","publisher_logo_embedded":False}
    report["status"]="PPTX_AND_PNG_ENGINEERING_PASS"
   except Exception as e:
    report["status"]="RENDER_FAILED";report["render_error"]=type(e).__name__+": "+str(e)
