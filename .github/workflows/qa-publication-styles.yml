@@ -5,6 +5,7 @@ on:
     paths:
       - 'sharepack/**'
       - 'qa/*publication_style_probe.py'
+      - 'qa/plos_editorial_probe.py'
       - '.github/workflows/qa-publication-styles.yml'
   workflow_dispatch:
 permissions:
@@ -21,6 +22,8 @@ jobs:
             script: qa/scvi_publication_style_probe.py
           - label: plos-journal
             script: qa/plos_publication_style_probe.py
+          - label: plos-editorial
+            script: qa/plos_editorial_probe.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -51,4 +54,11 @@ jobs:
         with:
           name: plos-unreviewed-styling-preview
           path: qa_preview/plos_style_test_contact_sheet.png
+          if-no-files-found: warn
+      - name: Upload editorial comparative visual
+        if: matrix.label == 'plos-editorial'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plos-editorial-unreviewed-preview
+          path: qa_preview/plos_editorial_test_contact_sheet.png
           if-no-files-found: warn
