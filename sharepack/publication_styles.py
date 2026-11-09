@@ -25,12 +25,12 @@ PROFILES = {
         "display": "arXiv preprint",
         "masthead": "SHAREPACK  /  arXiv PREPRINT STYLE",
         "palette": {
-            "bg": "1C1A17", "navy": "F5F4EF", "royal": "A5D6FE",
+            "bg": "1C1A17", "navy": "F5F4EF", "royal": "E8B5B5",
             "ink": "F5F4EF", "muted": "D0CCC6", "border": "6B6459",
             "light": "34312D", "white": "302D2A", "mint": "31434A",
-            "peach": "47342F", "green": "A5D6FE", "line": "1F5E96",
+            "peach": "47342F", "green": "E8B5B5", "line": "AB5559",
         },
-        "source_note": "arXiv public design-system palette (not official affiliation)",
+        "source_note": "arXiv-inspired editorial hierarchy; not an official template or affiliation",
     },
     "preprint-neutral": {
         "display": "Unspecified preprint",
