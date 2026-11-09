@@ -304,6 +304,24 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
                 yover=min(sa.top+sa.height,sb.top+sb.height)-max(sa.top,sb.top)
                 if xover>Inches(.03) and yover>Inches(.03):
                     text_collisions.append({'page':i,'shape_a':a,'shape_b':b})
+    # Static mobile-font check. At a 400px-wide portrait card, one PowerPoint
+    # point occupies about 0.74 rendered pixels. This is only a warning; actual
+    # rasterized text must still be inspected (font fallback can change metrics).
+    mobile_type_warnings=[]
+    for page_i,slide in enumerate(deck2.slides,1):
+        for shape_i,shape in enumerate(slide.shapes):
+            if not shape.has_text_frame or not shape.text.strip():
+                continue
+            for paragraph in shape.text_frame.paragraphs:
+                for run in paragraph.runs:
+                    if not run.text.strip() or run.font.size is None:
+                        continue
+                    pt=run.font.size.pt
+                    approx_px=round(pt*400/(7.5*72),1)
+                    if approx_px<12.0:
+                        mobile_type_warnings.append({'page':page_i,'shape':shape_i,
+                            'font_pt':round(pt,2),'approx_px_at_400w':approx_px,
+                            'sample':run.text[:28]})
     with zipfile.ZipFile(pptpath) as z:
         xml=''.join(z.read(p).decode('utf-8') for p in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml',p))
     small_slots=[{'card':g['card'],'asset_id':slot['asset_id'],'draw_height_in':slot['draw_height_in']}
@@ -313,6 +331,8 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
        'expected_cjk_font':publication_style.cjk_font,
        'expected_latin_font':publication_style.latin_font,'small_panel_slots':small_slots,
        'text_text_collisions':text_collisions,
+       'mobile_type_warnings':mobile_type_warnings,
+       'min_accepted_approx_type_px_at_400w':12.0,
        'layout_status':'PARTIAL_REQUIRES_REDISTRIBUTION' if small_slots or overflow or text_collisions else 'STRUCTURAL_PASS',
        'real_office_review':'PENDING','mobile_visual_review':'PENDING'}
     # A machine shape check cannot confer human scientific or mobile acceptance.
@@ -320,6 +340,7 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     reports['release_blockers']=['SCIENCE_AND_WINDOWS_VISUAL_REVIEW_NOT_PERFORMED']
     if small_slots:reports['release_blockers'].append('MOBILE_FIGURE_TOO_SMALL')
     if text_collisions:reports['release_blockers'].append('TEXT_OVERLAP')
+    if mobile_type_warnings:reports['release_blockers'].append('MOBILE_TEXT_TOO_SMALL')
     if reports['panel_selection_audit']['pending']:
         reports['release_blockers'].append('PANEL_SELECTION_NOT_REVIEWED')
     if layout_engine=='freeform':
