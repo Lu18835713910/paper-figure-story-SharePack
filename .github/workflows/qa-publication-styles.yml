@@ -1,0 +1,54 @@
+name: SharePack source-linked publication style probes
+on:
+  push:
+    branches: [qa/publication-style-20261109]
+    paths:
+      - 'sharepack/**'
+      - 'qa/*publication_style_probe.py'
+      - '.github/workflows/qa-publication-styles.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-papers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: arxiv-preprint
+            script: qa/scvi_publication_style_probe.py
+          - label: plos-journal
+            script: qa/plos_publication_style_probe.py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies and LibreOffice
+        run: |
+          python -m pip install -e .
+          if ! command -v libreoffice >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq libreoffice-impress fonts-noto-cjk
+          fi
+      - name: Run actual article + editable PPTX + exported PDF / PNG
+        shell: bash
+        run: |
+          set -o pipefail
+          python "${{ matrix.script }}" 2>&1 | tee "publication_style_${{ matrix.label }}.log"
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: style-test-log-${{ matrix.label }}
+          path: publication_style_*.log
+          if-no-files-found: warn
+      - name: Upload PLOS attribution-labeled temporary preview
+        if: matrix.label == 'plos-journal'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plos-unreviewed-styling-preview
+          path: qa_preview/plos_style_test_contact_sheet.png
+          if-no-files-found: warn
