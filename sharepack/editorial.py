@@ -61,7 +61,7 @@ def top(sl,c,i,n):
     put(sl,f"{i:02d} / {n:02d}",6.12,.23,.84,12.0,"muted",cap=.37,where="counter",align=PP_ALIGN.RIGHT)
     rule(sl,.76)
     stage=str(c["stage"]).upper()
-    put(sl,stage,X,.94,CW,15.0,"royal",True,cap=.38,where="stage")
+    put(sl,stage,X,.94,CW,16.4,"royal",True,cap=.40,where="stage")
     title=str(c["title"])
     size=27 if weight_len(title)>29 else 30
     y=put(sl,title,X,1.36,CW,size,"navy",True,cap=1.24,where="title")
@@ -133,12 +133,12 @@ def framework(sl,c,limits,metrics,start):
             return y
         labelw=1.73
         textw=CW-2.00
-        required=max(height(label,labelw,15.2),height(val,textw,17.1))
+        required=max(height(label,labelw,16.5),height(val,textw,17.1))
         rh=max(.73,required+.19)
         if rh>1.08:
             raise ContractError("EDITORIAL_FRAMEWORK_ROW_REPLAN:"+label)
         R.rect(sl,X,y,.052,rh-.04,"royal" if accent else "border")
-        put(sl,label,X+.12,y+.10,labelw,15.2,"royal",True,cap=rh-.10,where="framework_label")
+        put(sl,label,X+.12,y+.10,labelw,16.5,"royal",True,cap=rh-.10,where="framework_label")
         put(sl,val,X+1.94,y+.10,textw,17.1,"navy",accent,cap=rh-.10,where="framework_value")
         return y+rh+.08
     y=row("核心科学问题",c.get("question") or c["observation"],start,accent=True)
@@ -175,7 +175,7 @@ def image(sl,asset,root,x,y,w,h):
         r=im.width/im.height
     # A neutral light artboard prevents low-contrast axes from disappearing on dark themes.
     R.rect(sl,x,y,w,h,"FFFFFF",rounded=True)
-    usable_h=h-.40
+    usable_h=h-.60
     iw=min(w-.16,usable_h*r)
     ih=iw/r
     if iw<1.4 or ih<1.6:
@@ -184,8 +184,8 @@ def image(sl,asset,root,x,y,w,h):
     xx=x+(w-iw)/2
     yy=y+(usable_h-ih)/2+.02
     sl.shapes.add_picture(str(p),Inches(xx),Inches(yy),width=Inches(iw),height=Inches(ih))
-    cap=f"{asset['figure']} · PDF p.{asset.get('pdf_page','?')} · 未经独立图像审核"
-    put(sl,cap,x+.10,y+h-.36,w-.16,11.2,"muted",cap=.33,where="figure_source")
+    cap=f"{asset['figure']} · PDF p.{asset.get('pdf_page','?')} · 原图待核验"
+    put(sl,cap,x+.10,y+h-.52,w-.16,16.3,"muted",cap=.47,where="figure_source")
     return {"asset_id":asset["id"],"draw_width_in":round(iw,3),
         "draw_height_in":round(ih,3),"review_status":asset.get("review_status","PENDING"),
         "mobile_review_required":False,"slot":[round(x,3),round(y,3),round(w,3),round(h,3)]}
@@ -209,7 +209,7 @@ def evidence(sl,c,limits,metrics,assets,root,start):
         if rh>1.12:
             raise ContractError("EDITORIAL_EVIDENCE_REPLAN_TEXT:"+label)
         R.rect(sl,X,y,.048,rh-.06,"royal")
-        put(sl,label,X+.11,y+.10,1.05,15.2,"royal",True,cap=rh-.10,where="evidence_label")
+        put(sl,label,X+.11,y+.10,1.05,16.3,"royal",True,cap=rh-.10,where="evidence_label")
         put(sl,text,X+1.32,y+.09,CW-1.37,sz,"navy",False,cap=rh-.10,where="evidence_text")
         return y+rh+.09
 
