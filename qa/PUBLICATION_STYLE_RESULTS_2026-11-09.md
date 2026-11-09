@@ -87,3 +87,32 @@
 **不集成 main，不发布 Beta，不替换现有 GitHub 首页作品展示。**
 
 本阶段已证明“**上传论文信息→主题自动路由→真实可编辑 PPTX 与 PNG 输出**”的工程链路可以工作，也证明原始一套模板不能单靠颜色变换达到用户希望的期刊视觉质量。下一步应在**相同论文和证据**下做“默认版与新的期刊编辑版”的 A/B 视觉对照，再考虑受控集成。
+
+## 7. Journal editorial V2 — actual Figure source and source-grounded story
+
+**Baseline:** isolated `qa/publication-style-20261109` branch; no merge to `main`; no Release tag changes.
+
+**Real article:** Posfai, Zhou, McCandlish & Kinney (2025), *Gauge fixing for sequence-function relationships*, PLOS Computational Biology, DOI [10.1371/journal.pcbi.1012818](https://doi.org/10.1371/journal.pcbi.1012818), CC BY 4.0.
+
+**Changes under real workflow:**
+- Introduced opt-in `--layout-engine editorial` with distinct cover, framework, methods, evidence, finding, synthesis and limitations pages. Existing `freeform` and `legacy` remain available. This is not a new journal-authorized template.
+- Original publisher Figure 1 obtained from [PLOS full-resolution original PNG](https://journals.plos.org/ploscompbiol/article/figure/image?size=large&id=10.1371/journal.pcbi.1012818.g001), unmodified, **2190×1028** pixels, SHA-256 `e05e7ba6a51b72d9992ee60243ffc89ddd8c68b085fce9d571ce4f4bc858ac10`. The Figure asset remains `PENDING` independent scientific/panel QA.
+- The Figure 1 card now gives the image **6.161 inches of 6.5-inch content width (~94.8%)**. The old figure crop included neighboring article paragraphs and provided a much smaller apparent science image.
+- The Figure card shows the scientific question, method, original Figure, explicit observation and interpretation, source citation and evidence boundary. Combining observation/takeaway on one legible row preserves both strings, rather than deleting scientific content to make space.
+- Created an eight-card PLOS case based on paper abstract, author summary and Figure 1 caption; it is a **research-grounded, unreviewed engineering demonstration**, not a completely vetted article story.
+- Exported **8-slide editable PPTX, 8-page PDF and eight 1080×1440 PNGs** plus provenance/QA JSON in a temporary GitHub Actions artifact. Published scientific review status remains `PARTIAL`.
+- First raster inspection revealed Figure attribution text on a white image-board used too-light text; corrected it to dark and re-exported.
+- **Static geometry:** 0 text-box collisions, 0 registered small-panel slots. **Visual review still PARTIAL**: mobile Figure internal axes and legends still may be too small, no real Microsoft PowerPoint Windows inspection, and table/supplement coverage remains incomplete.
+- **Typography QA:** 68 below-12px warnings at 400px card width in latest `qa_report.json`; mostly masthead, page counter, source/independence footers, with four 16.0pt framework step numerals. Main story copy uses larger type. This is not a blanket mobile PASS.
+
+### Reproduction links
+
+- [Real-paper and editable-output GitHub Actions run 42576005586](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42576005586).
+- [Complete eight-card QA ZIP (PPTX, PDF, PNG, provenance; **UNREVIEWED**)](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42576005586/artifacts/13654968226).
+- [Source-grounded preview](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42576005586/artifacts/13655526080).
+
+### Final decision
+
+**EDITORIAL ENGINEERING PASS / CONTENT AND MOBILE VISUAL REVIEW PARTIAL / NO BETA INTEGRATION APPROVAL.**
+
+Prioritize the next improvement on original Figure panel-level legibility and reviewed Table/Supplement evidence selection. Do not keep introducing decorative themes or fabricate publisher logos. Authorized unmodified publisher logos are supported only via documented rights and exact SHA/DOI/source checks; none was embedded into these PLOS cards.
