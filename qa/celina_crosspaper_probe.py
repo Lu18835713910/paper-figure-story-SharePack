@@ -25,6 +25,11 @@ LINKS = [
     "https://www.nature.com/articles/s41467-025-56280-4.pdf",
     "https://link.springer.com/content/pdf/10.1038/s41467-025-56280-4.pdf",
     "https://pmc.ncbi.nlm.nih.gov/articles/PMC11770176/pdf/",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11770176/pdf/41467_2025_56280.pdf",
+    "https://europepmc.org/articles/PMC11770176?pdf=render",
+    "https://europepmc.org/articles/PMC11770176/pdf",
+    "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC11770176/fullTextXML?format=pdf",
+    "https://www.nature.com/articles/s41467-025-56280-4.pdf?download=1",
 ]
 # Claims paraphrase the article Results and Abstract; complete supplementary checking has NOT been performed.
 CARD_SPECS = [
@@ -45,8 +50,9 @@ def download_pdf(dest: Path):
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 SharePack QA (research)"})
             with urllib.request.urlopen(req, timeout=50) as res:
                 data = res.read(30000000)
+                response_info = {"status": res.status, "content_type": res.headers.get("Content-Type"), "final_url": res.url, "head": data[:48].decode("utf-8","replace")}
             if not data.startswith(b"%PDF-"):
-                raise ValueError("response is not a PDF")
+                raise ValueError("response is not a PDF: " + json.dumps(response_info))
             dest.write_bytes(data)
             return {"url": url, "size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "attempts": attempts}
         except Exception as e:
