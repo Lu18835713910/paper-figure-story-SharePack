@@ -140,23 +140,23 @@ def framework(sl,c,limits,metrics,start):
         R.rect(sl,X,y,.052,rh-.04,"royal" if accent else "border")
         put(sl,label,X+.12,y+.10,labelw,16.5,"royal",True,cap=rh-.10,where="framework_label")
         put(sl,val,X+1.94,y+.10,textw,17.1,"navy",accent,cap=rh-.10,where="framework_value")
-        return y+rh+.08
+        return y+rh+.03
     y=row("核心科学问题",c.get("question") or c["observation"],start,accent=True)
     y=row("研究策略",c["method"],y)
     steps=c.get("flow_steps") or []
     if steps:
         if len(steps)>4:
             raise ContractError("EDITORIAL_FRAMEWORK_STEPS_MAX_4")
-        y=put(sl,"研究证据如何推进",X,y+.02,CW,16.2,"royal",True,where="flowheading")+.12
+        y=put(sl,"研究证据如何推进",X,y+.02,CW,16.2,"royal",True,where="flowheading")+.06
         gap=.17
         cellw=(CW-gap)/2
         for j,step in enumerate(steps):
             ix=j%2;iy=j//2
-            xx=X+ix*(cellw+gap); yy=y+iy*.79
-            R.rect(sl,xx,yy,cellw,.71,["light","mint","peach","light"][j],rounded=True)
+            xx=X+ix*(cellw+gap); yy=y+iy*.75
+            R.rect(sl,xx,yy,cellw,.69,["light","mint","peach","light"][j],rounded=True)
             put(sl,f"{j+1:02d}",xx+.14,yy+.17,.43,16.0,"royal",True,cap=.45,where="step_number")
             put(sl,step,xx+.66,yy+.13,cellw-.78,17.2,"navy",True,cap=.53,where="step")
-        y+=math.ceil(len(steps)/2)*.79+.10
+        y+=math.ceil(len(steps)/2)*.75+.07
     y=row("实际观察",c["observation"],y)
     y=row("核心认识",c["takeaway"],y,accent=True)
     if limits:
@@ -209,7 +209,8 @@ def evidence(sl,c,limits,metrics,assets,root,start):
         if rh>1.12:
             raise ContractError("EDITORIAL_EVIDENCE_REPLAN_TEXT:"+label)
         R.rect(sl,X,y,.048,rh-.06,"royal")
-        put(sl,label,X+.11,y+.10,1.05,16.3,"royal",True,cap=rh-.10,where="evidence_label")
+        short_label={"观察结果":"观察","核心发现":"发现","证据边界":"边界","关键数字":"数据"}.get(label,label)
+        put(sl,short_label,X+.11,y+.10,1.05,16.3,"royal",True,cap=rh-.10,where="evidence_label")
         put(sl,text,X+1.32,y+.09,CW-1.37,sz,"navy",False,cap=rh-.10,where="evidence_text")
         return y+rh+.09
 
