@@ -14,6 +14,7 @@ from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 from .common import ContractError, within
 from . import render as R
+from .publication_styles import current_style
 
 W,H=7.5,10.0
 L,RIGHT=.48,7.02
@@ -45,7 +46,7 @@ def stripe(sl,y,color='royal'): R.rect(sl,L,y,.055,.35,color)
 def intro(sl,card,idx,total):
     R.rect(sl,0,0,W,H,'bg')
     R.rect(sl,0,0,W,.055,'navy')
-    put(sl,'PFS / RESEARCH NOTES',L,.21,4.8,12.3,'royal',True,part='masthead')
+    put(sl,(current_style().masthead if current_style() else 'PFS / RESEARCH NOTES'),L,.21,5.48,10.2,'royal',True,part='masthead')
     put(sl,f'{idx:02d} / {total:02d}',6.10,.21,.9,10.4,'muted',part='counter',align=PP_ALIGN.RIGHT)
     line(sl,L,.62,CONTENT_W)
     stage=str(card['stage'])
@@ -62,7 +63,7 @@ def footer(sl,story,i,n):
     p=story['paper']
     cite=f"{p['authors_short']} | {p.get('journal','')} | DOI: {p['doi']}"
     put(sl,cite,L,9.39,CONTENT_W,8.0,'muted',part='citation')
-    put(sl,'科研内容整理：PFS SharePack  |  github.com/Lu18835713910/paper-figure-story',L,9.64,CONTENT_W,7.9,'royal',part='github')
+    put(sl,'SharePack · Editorial style inspired by publication source; independent project',L,9.64,CONTENT_W,7.6,'royal',part='github')
 
 def heading(sl,label,y, *,rule=True):
     put(sl,label,L,y,CONTENT_W,11.0,'royal',True,part='heading')
