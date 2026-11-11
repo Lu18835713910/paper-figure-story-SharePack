@@ -1,8 +1,9 @@
-"""Publication-source-driven editorial themes; no logos or publisher endorsement.
+"""Publication-source-driven editorial themes (not publisher-affiliated).
 
-Routing uses the *uploaded document edition*, not an inferred eventual publication.
-Journal palettes are deliberately original reinterpretations of editorial hierarchy,
-not copies of journal covers, mastheads, typefaces, or official brand marks.
+PLOS profile derives its semantic color tokens from the actually provided
+journal webpage screenshot and PDF; unrelated generic themes are not imposed
+on verified source publications. Real publisher branding remains opt-in with
+explicit provenance and status, never fabricated.
 """
 from __future__ import annotations
 
@@ -45,14 +46,22 @@ PROFILES = {
     },
     "journal-plos-computational-biology": {
         "display": "PLOS Computational Biology",
-        "masthead": "SHAREPACK  /  PLOS COMP. BIOL. STYLE",
+        "masthead": "PLOS COMPUTATIONAL BIOLOGY  |  SHAREPACK",
+        # Source-bound reference: user-provided journal web screenshot and the
+        # PLOS printable PDF (doi:10.1371/journal.pcbi.1012818).
+        # Website: light-gray masthead, dark navy logo, #4675BF links/tabs.
+        # PDF: predominantly white page with black text and restrained blue links.
+        # These are not invented "inspired" colors.
         "palette": {
-            "bg": "17272C", "navy": "F5F8F7", "royal": "83E0CE",
-            "ink": "F5F8F7", "muted": "D4DEDD", "border": "55767A",
-            "light": "294348", "white": "243940", "mint": "285247",
-            "peach": "4A4039", "green": "8CDCB5", "line": "6EB5AE",
+            "bg": "FFFFFF", "navy": "202124", "royal": "4675BF",
+            "ink": "202124", "muted": "525A65", "border": "CED5DF",
+            "light": "EFF3FA", "white": "FFFFFF", "mint": "DCE8F6",
+            "peach": "ECEFF3", "green": "346DB0", "line": "4675BF",
         },
-        "source_note": "PLOS-inspired clean editorial treatment; not a replica",
+        "source_note": ("Source-linked visual tokens: light-gray website header "
+                        "(#EFEFEF), navy journal mark (#282B62), blue navigation "
+                        "(#4675BF), and white/black journal-PDF body; "
+                        "independent SharePack interpretation, not publisher-affiliated."),
     },
     "journal-nature-communications": {
         "display": "Nature Communications",
