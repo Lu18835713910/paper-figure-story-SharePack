@@ -112,7 +112,8 @@ class PublicationRender(unittest.TestCase):
         self.assertEqual(load(out/"publication_style.json")["style_id"],"journal-plos-computational-biology")
         editorial_out=self.root/"plos_editorial"
         editorial_qa=build(self.story_path,self.root/"assets"/"assets.json",
-            editorial_out,render_png=False,layout_engine="editorial")
+            editorial_out,render_png=False,layout_engine="editorial",
+            pdf_index_path=self.root/"index"/"pdf_index.json")
         with zipfile.ZipFile(editorial_out/"SharePack_editable.pptx") as z:
             edxml=z.read("ppt/slides/slide1.xml").decode("utf-8")
         self.assertIn("EFEFEF",edxml)
