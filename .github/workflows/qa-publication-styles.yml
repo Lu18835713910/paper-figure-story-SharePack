@@ -7,6 +7,7 @@ on:
       - 'qa/*publication_style_probe.py'
       - 'qa/plos_editorial_probe.py'
       - 'qa/plos_grounded_editorial_probe.py'
+      - 'qa/plos_flex_layout_probe.py'
       - '.github/workflows/qa-publication-styles.yml'
   workflow_dispatch:
 permissions:
@@ -27,6 +28,8 @@ jobs:
             script: qa/plos_editorial_probe.py
           - label: plos-grounded-editorial
             script: qa/plos_grounded_editorial_probe.py
+          - label: plos-flex
+            script: qa/plos_flex_layout_probe.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -81,4 +84,18 @@ jobs:
         with:
           name: plos-source-grounded-8cards-editable-QA-UNREVIEWED
           path: qa_preview/plos_grounded_editorial_QA_full.zip
+          if-no-files-found: warn
+      - name: Upload adaptive multi-layout preview
+        if: matrix.label == 'plos-flex'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plos-flex-layout-preview-unreviewed
+          path: qa_preview/plos_flex_contact_sheet.png
+          if-no-files-found: warn
+      - name: Upload adaptive PowerPoint and PNG QA bundle
+        if: matrix.label == 'plos-flex'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plos-flex-8cards-editable-QA-UNREVIEWED
+          path: qa_preview/plos_flex_QA_full.zip
           if-no-files-found: warn
