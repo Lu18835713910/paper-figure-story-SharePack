@@ -71,7 +71,7 @@ def top(sl,c,i,n):
                   else style.masthead if style else "SHAREPACK / RESEARCH NOTES")
         mastcolor="282B62" if is_plos else "royal"
     put(sl,masthead,x,.20,mw,16.2 if is_plos else 12.0,mastcolor,True,cap=.43,where="masthead")
-    put(sl,f"{i:02d} / {n:02d}",6.12,.20,.84,16.2 if is_plos else 12.0,"525A65" if is_plos else "muted",cap=.43,where="counter",align=PP_ALIGN.RIGHT)
+    put(sl,f"{i:02d} / {n:02d}",5.84,.20,1.14,16.2 if is_plos else 12.0,"525A65" if is_plos else "muted",cap=.43,where="counter",align=PP_ALIGN.RIGHT)
     rule(sl,.76)
     stage=str(c["stage"]).upper()
     put(sl,stage,X,.94,CW,16.4,"royal",True,cap=.40,where="stage")
