@@ -110,12 +110,19 @@ class PublicationRender(unittest.TestCase):
         self.assertEqual(qa["publication_style"]["style_id"],"journal-plos-computational-biology")
         self.assertEqual(qa["publication_style"]["status"],"CANDIDATE_REQUIRES_VERIFICATION")
         self.assertEqual(load(out/"publication_style.json")["style_id"],"journal-plos-computational-biology")
+        editorial_out=self.root/"plos_editorial"
+        editorial_qa=build(self.story_path,self.root/"assets"/"assets.json",
+            editorial_out,render_png=False,layout_engine="editorial")
+        with zipfile.ZipFile(editorial_out/"SharePack_editable.pptx") as z:
+            edxml=z.read("ppt/slides/slide1.xml").decode("utf-8")
+        self.assertIn("EFEFEF",edxml)
+        self.assertIn("282B62",edxml)
+        self.assertNotIn("17272C",edxml)
         with zipfile.ZipFile(out/"SharePack_editable.pptx") as z:
             xml=z.read("ppt/slides/slide1.xml").decode("utf-8")
         self.assertIn("FFFFFF",xml)
         self.assertIn("4675BF",xml)
-        self.assertIn("EFEFEF",xml)
-        self.assertIn("282B62",xml)
+        # The website-gray masthead is specific to the opt-in editorial engine.
         self.assertNotIn("17272C",xml)
         self.assertIn("Arial",xml)
         self.assertIn("SimHei",xml)
