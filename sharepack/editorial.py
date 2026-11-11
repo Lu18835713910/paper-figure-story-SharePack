@@ -63,15 +63,15 @@ def top(sl,c,i,n):
     if logo is not None:
         R.embed_authorized_logo(sl,logo,X,.13,2.34,.51)
         x=3.04;mw=2.93
-        masthead="SHAREPACK  |  RESEARCH NOTES" if is_plos else style.masthead
+        masthead="SHAREPACK  |  NOTES" if is_plos else style.masthead
         mastcolor="282B62" if is_plos else "royal"
     else:
         x=X;mw=5.47
-        masthead=("PLOS COMPUTATIONAL BIOLOGY  |  SHAREPACK" if is_plos
+        masthead=("PLOS COMPUTATIONAL BIOLOGY" if is_plos
                   else style.masthead if style else "SHAREPACK / RESEARCH NOTES")
         mastcolor="282B62" if is_plos else "royal"
-    put(sl,masthead,x,.23,mw,12.0,mastcolor,True,cap=.37,where="masthead")
-    put(sl,f"{i:02d} / {n:02d}",6.12,.23,.84,12.0,"525A65" if is_plos else "muted",cap=.37,where="counter",align=PP_ALIGN.RIGHT)
+    put(sl,masthead,x,.20,mw,16.2 if is_plos else 12.0,mastcolor,True,cap=.43,where="masthead")
+    put(sl,f"{i:02d} / {n:02d}",6.12,.20,.84,16.2 if is_plos else 12.0,"525A65" if is_plos else "muted",cap=.43,where="counter",align=PP_ALIGN.RIGHT)
     rule(sl,.76)
     stage=str(c["stage"]).upper()
     put(sl,stage,X,.94,CW,16.4,"royal",True,cap=.40,where="stage")
@@ -86,12 +86,12 @@ def top(sl,c,i,n):
 def bottom(sl,story):
     rule(sl,9.26)
     paper=story["paper"]
-    cite=f"{paper['authors_short']}  |  DOI {paper['doi']}"
+    cite=f"{paper['authors_short']} | DOI {paper['doi']}"
     # Journal is already identified in the masthead; keep short source citation
     # at the bottom rather than squeezing two or three unreadable text lines.
-    put(sl,cite,X,9.36,CW,10.7,"muted",cap=.31,where="citation")
-    put(sl,"SharePack · Independent research notes · not publisher-affiliated",
-        X,9.68,CW,10.5,"royal",cap=.32,where="independence")
+    put(sl,cite,X,9.32,CW,16.2,"muted",cap=.43,where="citation")
+    put(sl,"SharePack · 独立论文解读，非期刊官方作品",
+        X,9.65,CW,16.2,"royal",cap=.43,where="independence")
 
 def block(sl,label,content,y,*,main=False,pt=BODY,max_h=1.05):
     if not str(content).strip():
@@ -167,7 +167,7 @@ def framework(sl,c,limits,metrics,start):
             ix=j%2;iy=j//2
             xx=X+ix*(cellw+gap); yy=y+iy*.75
             R.rect(sl,xx,yy,cellw,.69,["light","mint","peach","light"][j],rounded=True)
-            put(sl,f"{j+1:02d}",xx+.14,yy+.17,.43,16.0,"royal",True,cap=.45,where="step_number")
+            put(sl,f"{j+1:02d}",xx+.14,yy+.15,.43,16.3,"royal",True,cap=.45,where="step_number")
             put(sl,step,xx+.66,yy+.13,cellw-.78,17.2,"navy",True,cap=.53,where="step")
         y+=math.ceil(len(steps)/2)*.75+.07
     y=row("实际观察",c["observation"],y)
