@@ -1,0 +1,47 @@
+name: Agent-planned vs auto layout A/B real-paper QA
+on:
+  push:
+    branches: [qa/agent-planned-ab-20261111]
+    paths:
+      - 'qa/plos_agent_ab_probe.py'
+      - '.github/workflows/qa-agent-ab.yml'
+      - 'sharepack/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  genuine-plos-agent-ab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and LibreOffice
+        run: |
+          python -m pip install -e .
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-impress fonts-noto-cjk
+      - name: Produce actual PDF/PPTX and image A/B from real PLOS article
+        shell: bash
+        run: |
+          set -o pipefail
+          python qa/plos_agent_ab_probe.py 2>&1 | tee agent_ab.log
+      - name: Preserve logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-ab-log
+          path: agent_ab.log
+          if-no-files-found: warn
+      - name: Preserve visual comparison and editable outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-ab-real-PLOS-preview-unreviewed
+          path: |
+            qa_preview/plos_agent_ab_comparison.png
+            qa_preview/AB_card_*.png
+            qa_preview/plos_agent_ab_full_QA.zip
+          if-no-files-found: warn
