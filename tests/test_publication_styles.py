@@ -206,6 +206,48 @@ class PublicationRender(unittest.TestCase):
             build(self.story_path,self.root/"assets"/"assets.json",self.root/"reject_preprint",
                   render_png=False,logo_manifest_path=self.root/"wrong_edition.json")
 
+    def test_flex_agent_layout_is_source_bound_and_collision_checked(self):
+        from sharepack.flex_layout import CONTRACT
+        plan={"contract":CONTRACT,"story_sha256":digest(self.story_path),
+              "assets_sha256":digest(self.root/"assets"/"assets.json"),
+              "cards":[{"card":1,"preferred":"essay","rationale":"Question-forward cover"},
+                       {"card":3,"preferred":"figure_explain","rationale":"Figure needs explanation"}]}
+        p=self.root/"layout_plan.json";save(p,plan)
+        qa=build(self.story_path,self.root/"assets"/"assets.json",
+                 self.root/"flex_agent",render_png=False,layout_engine="flex",
+                 pdf_index_path=self.root/"index"/"pdf_index.json",
+                 agent_layout_plan_path=p)
+        self.assertEqual(qa["layout_engine"],"flex")
+        self.assertEqual(qa["agent_layout_plan"]["cards_with_preferences"],2)
+        self.assertEqual(len(qa["layout_geometry"]),8)
+        self.assertFalse(qa["static_visual_qa"]["text_text_collisions"])
+        from sharepack.common import load
+        dec=load(self.root/"flex_agent"/"adaptive_composition_plan.json")
+        self.assertEqual(dec["contract"],"sharepack-adaptive-layout-record-v1")
+        self.assertEqual(dec["cards"][0]["agent_preference"],"essay")
+        self.assertTrue(all(x["layout_type"].startswith("flex_") for x in dec["cards"]))
+        # Deliberate stale scientific assets prevent Agent preferences from
+        # silently binding to a different content package.
+        plan["assets_sha256"]="0"*64
+        save(self.root/"stale_plan.json",plan)
+        with self.assertRaisesRegex(ContractError,"AGENT_LAYOUT_SOURCE_HASH_MISMATCH"):
+            build(self.story_path,self.root/"assets"/"assets.json",
+                  self.root/"reject_stale",render_png=False,layout_engine="flex",
+                  agent_layout_plan_path=self.root/"stale_plan.json")
+        # The agent is not allowed to request 4-column coordinates, arbitrary
+        # font overrides, raw drawing instructions or unsupported page roles.
+        plan["assets_sha256"]=digest(self.root/"assets"/"assets.json")
+        plan["cards"]=[{"card":1,"preferred":"figure_first"}]
+        save(self.root/"incompatible.json",plan)
+        with self.assertRaisesRegex(ContractError,"AGENT_LAYOUT_VARIANT_INCOMPATIBLE"):
+            build(self.story_path,self.root/"assets"/"assets.json",
+                  self.root/"reject_incompatible",render_png=False,layout_engine="flex",
+                  agent_layout_plan_path=self.root/"incompatible.json")
+        with self.assertRaisesRegex(ContractError,"AGENT_LAYOUT_PLAN_REQUIRES_FLEX_ENGINE"):
+            build(self.story_path,self.root/"assets"/"assets.json",
+                  self.root/"reject_engine",render_png=False,layout_engine="editorial",
+                  agent_layout_plan_path=p)
+
     def test_source_index_hash_mismatch_rejected(self):
         bad=copy.deepcopy(self.idx);bad["pdf_sha256"]="z"*64
         save(self.root/"bad_index.json",bad)
