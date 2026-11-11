@@ -84,14 +84,14 @@ def top(sl,c,i,n):
     return max(2.77,y+.12)
 
 def bottom(sl,story):
-    rule(sl,9.26)
+    rule(sl,9.17)
     paper=story["paper"]
-    cite=f"{paper['authors_short']} | DOI {paper['doi']}"
+    cite=f"DOI: {paper['doi']}"
     # Journal is already identified in the masthead; keep short source citation
     # at the bottom rather than squeezing two or three unreadable text lines.
-    put(sl,cite,X,9.32,CW,16.2,"muted",cap=.43,where="citation")
+    put(sl,cite,X,9.22,CW,16.2,"muted",cap=.43,where="citation")
     put(sl,"SharePack · 独立论文解读，非期刊官方作品",
-        X,9.65,CW,16.2,"royal",cap=.43,where="independence")
+        X,9.61,CW,16.2,"royal",cap=.39,where="independence")
 
 def block(sl,label,content,y,*,main=False,pt=BODY,max_h=1.05):
     if not str(content).strip():
