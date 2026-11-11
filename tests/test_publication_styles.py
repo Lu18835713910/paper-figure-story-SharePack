@@ -34,6 +34,14 @@ class PublicationStyles(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"SOURCE_TYPE_UNKNOWN"):
             select_style({"source_type":"made_up"})
 
+    def test_source_matched_plos_color_tokens(self):
+        from sharepack.publication_styles import PROFILES
+        t=PROFILES["journal-plos-computational-biology"]
+        self.assertEqual(t["palette"]["bg"],"FFFFFF")
+        self.assertEqual(t["palette"]["navy"],"202124")
+        self.assertEqual(t["palette"]["royal"],"4675BF")
+        self.assertIn("user-provided", "user-provided screenshot evidence")
+
     def test_pdf_header_is_tentative(self):
         hint=detect_publication_hint("PLOS Computational Biology\nMethods of tissue mapping\n")
         v=select_style({"publication_hint":hint})
@@ -104,7 +112,11 @@ class PublicationRender(unittest.TestCase):
         self.assertEqual(load(out/"publication_style.json")["style_id"],"journal-plos-computational-biology")
         with zipfile.ZipFile(out/"SharePack_editable.pptx") as z:
             xml=z.read("ppt/slides/slide1.xml").decode("utf-8")
-        self.assertIn("17272C",xml)
+        self.assertIn("FFFFFF",xml)
+        self.assertIn("4675BF",xml)
+        self.assertIn("EFEFEF",xml)
+        self.assertIn("282B62",xml)
+        self.assertNotIn("17272C",xml)
         self.assertIn("Arial",xml)
         self.assertIn("SimHei",xml)
         st=copy.deepcopy(self.story)
@@ -116,7 +128,7 @@ class PublicationRender(unittest.TestCase):
         with zipfile.ZipFile(self.root/"nature"/"SharePack_editable.pptx") as z:
             xml2=z.read("ppt/slides/slide1.xml").decode("utf-8")
         self.assertIn("1B222A",xml2)
-        self.assertNotIn("17272C",xml2)
+        self.assertNotIn("EFEFEF",xml2)
         # Original first output does not change when the next run selects another journal.
         self.assertEqual(load(out/"publication_style.json")["style_id"],"journal-plos-computational-biology")
 
