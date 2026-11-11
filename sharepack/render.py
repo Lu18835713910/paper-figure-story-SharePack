@@ -235,7 +235,7 @@ def slides(story,assets,root):
                          'small_panel_flag':any(x['draw_height_in']<1.30 for x in fig_records)})
     return prs,geometry
 
-def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform', pdf_index_path=None, logo_manifest_path=None):
+def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout_engine='freeform', pdf_index_path=None, logo_manifest_path=None, agent_layout_plan_path=None):
     story_path=Path(story_path).resolve();asset_path=Path(asset_path).resolve();root=asset_path.parent
     outdir=Path(outdir).resolve();story=load(story_path);assets=load(asset_path)
     qa=validate_story(story,assets,root,profile=profile)
@@ -252,6 +252,12 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
         paper_for_style['publication_hint']=hint
     publication_style=select_style(paper_for_style)
     publication_logo=check_logo(logo_manifest_path,publication_style,story.get('paper',{}))
+    agent_hints={};agent_plan_report={'status':'NOT_USED'}
+    if layout_engine=='flex':
+        from .flex_layout import read_plan
+        agent_hints,agent_plan_report=read_plan(agent_layout_plan_path,story_path,asset_path,story)
+    elif agent_layout_plan_path is not None:
+        raise ContractError('AGENT_LAYOUT_PLAN_REQUIRES_FLEX_ENGINE')
     if outdir==root or outdir==story_path.parent:raise ContractError('OUTPUT_SAME_AS_INPUT')
     outdir.mkdir(parents=True,exist_ok=True)
     pptpath=outdir/'SharePack_editable.pptx'
@@ -265,6 +271,9 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
         elif layout_engine=='editorial':
             from .editorial import slides_editorial
             deck,geometry=slides_editorial(story,assets,root)
+        elif layout_engine=='flex':
+            from .flex_layout import slides_editorial_flex
+            deck,geometry=slides_editorial_flex(story,assets,root,hints=agent_hints)
         else:raise ContractError('LAYOUT_ENGINE_UNKNOWN')
     deck.save(pptpath)
     reports={'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
@@ -272,7 +281,7 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
      'publication_logo':publication_logo.report() if publication_logo else {'status':'NOT_EMBEDDED_NO_VERIFIED_PERMISSION'},
      'publication_index_sha256':digest(index_path) if index_path else None,
      'pptx_sha256':digest(pptpath),'pfs_needed':bool(story.get('pfs_bridge')),
-     'layout_engine':layout_engine,'layout_geometry':geometry, 'panel_selection_audit':panel_selection_audit(story,assets),'scientific_status':'PARTIAL' if not qa['formal_ready'] else 'REVIEWED_SOURCE_ONLY',
+     'layout_engine':layout_engine,'agent_layout_plan':agent_plan_report,'layout_geometry':geometry, 'panel_selection_audit':panel_selection_audit(story,assets),'scientific_status':'PARTIAL' if not qa['formal_ready'] else 'REVIEWED_SOURCE_ONLY',
      'contract_qa':qa,'original_figure_assets_used':sum(len(c.get('figure_asset_ids',[])) for c in story['cards'])}
     if render_png:
         with tempfile.TemporaryDirectory(prefix='sharepack_lo_') as ld:
@@ -379,6 +388,12 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
                     'mobile_review_required':g.get('mobile_review_required',False)} for g in geometry],
           'science_review':'NOT_PERFORMED_BY_LAYOUT_ENGINE',
           'visual_review':'REQUIRES_HUMAN_OR_OFFICE_INSPECTION'})
+    if layout_engine=='flex':
+        save(outdir/'adaptive_composition_plan.json',{
+            'contract':'sharepack-adaptive-layout-record-v1',
+            'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
+            'plan':agent_plan_report,'cards':geometry,
+            'safety_note':'No machine audit substitutes for font-aware Office and mobile visual QA'})
     save(outdir/'publication_style.json',publication_style.to_dict())
     save(outdir/'publication_logo.json',reports['publication_logo'])
     save(outdir/'qa_report.json',reports)
