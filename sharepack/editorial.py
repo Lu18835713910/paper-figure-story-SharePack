@@ -49,16 +49,29 @@ def rule(sl,y):
 
 def top(sl,c,i,n):
     R.rect(sl,0,0,W,H,"bg")
-    R.rect(sl,0,0,.085,H,"royal")
+    style=current_style()
+    is_plos=style is not None and style.style_id=="journal-plos-computational-biology"
+    if is_plos:
+        # Based on the real article webpage and the printable PDF, not a generic
+        # "academic dark mode": gray site masthead, horizontal blue rule and
+        # black-on-white article layout. No imitation/alteration of logo art.
+        R.rect(sl,0,0,W,.76,"EFEFEF")
+        R.rect(sl,0,0,W,.045,"royal")
+    else:
+        R.rect(sl,0,0,.085,H,"royal")
     logo=current_logo()
     if logo is not None:
-        R.embed_authorized_logo(sl,logo,X,.22,1.16,.47)
-        x=1.83;mw=4.15
+        R.embed_authorized_logo(sl,logo,X,.13,2.34,.51)
+        x=3.04;mw=2.93
+        masthead="SHAREPACK  |  RESEARCH NOTES" if is_plos else style.masthead
+        mastcolor="282B62" if is_plos else "royal"
     else:
         x=X;mw=5.47
-    masthead=current_style().masthead if current_style() else "SHAREPACK / RESEARCH NOTES"
-    put(sl,masthead,x,.23,mw,12.0,"royal",True,cap=.37,where="masthead")
-    put(sl,f"{i:02d} / {n:02d}",6.12,.23,.84,12.0,"muted",cap=.37,where="counter",align=PP_ALIGN.RIGHT)
+        masthead=("PLOS COMPUTATIONAL BIOLOGY  |  SHAREPACK" if is_plos
+                  else style.masthead if style else "SHAREPACK / RESEARCH NOTES")
+        mastcolor="282B62" if is_plos else "royal"
+    put(sl,masthead,x,.23,mw,12.0,mastcolor,True,cap=.37,where="masthead")
+    put(sl,f"{i:02d} / {n:02d}",6.12,.23,.84,12.0,"525A65" if is_plos else "muted",cap=.37,where="counter",align=PP_ALIGN.RIGHT)
     rule(sl,.76)
     stage=str(c["stage"]).upper()
     put(sl,stage,X,.94,CW,16.4,"royal",True,cap=.40,where="stage")
