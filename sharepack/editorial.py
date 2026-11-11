@@ -62,11 +62,11 @@ def top(sl,c,i,n):
     logo=current_logo()
     if logo is not None:
         R.embed_authorized_logo(sl,logo,X,.13,2.34,.51)
-        x=3.04;mw=2.93
+        x=3.04;mw=2.58
         masthead="SHAREPACK  |  NOTES" if is_plos else style.masthead
         mastcolor="282B62" if is_plos else "royal"
     else:
-        x=X;mw=5.47
+        x=X;mw=5.12
         masthead=("PLOS COMPUTATIONAL BIOLOGY" if is_plos
                   else style.masthead if style else "SHAREPACK / RESEARCH NOTES")
         mastcolor="282B62" if is_plos else "royal"
