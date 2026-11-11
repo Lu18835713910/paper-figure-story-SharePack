@@ -52,3 +52,14 @@ Agent 配置示例（须替换为对应文件的实际 SHA-256）：
 **FLEX 版式工程候选：可以继续受控测试；正式对外发布：NO-GO。**
 
 与用户期望的真正自主布局仍有差距：目前只支持 5 种受控变体，尚不能任意决定跨卡拆分、动态页数、任意横纵组合与 panel 放大。下一阶段逐步引入 **页面内容拆分/合并提议 → 新规划试排 → 真实字体与像素级碰撞核验 → 多端导出 → 明确审核标记**。
+## 最终工程复测补记（2026-11-11）
+
+隔离候选 commit `3201d3d621e4c7e837b15794ad4a3cf8903c74a9` 已完成五条真实 PDF workflow 检查；包括 `plos-flex`、`plos-grounded-editorial`、`plos-editorial`、`plos-journal`、`arxiv-preprint`，全部 SUCCESS。四个 Python 版本 3.10–3.13 回归测试均 SUCCESS。
+
+- [最新五组真实文章 GitHub Actions](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42947558617)
+- [真实 PLOS 自适应八卡总览（仍未科学审核）](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42947558617/artifacts/13823557297)
+- [真实 PLOS 自适应可编辑 QA 包：PPTX、PDF、逐页 PNG](https://github.com/Lu18835713910/paper-figure-story-SharePack/actions/runs/42947558617/artifacts/13822999456)
+
+PLOS 八卡最终版式实际选取：`classic / framework / essay / figure_explain / essay / classic / essay / classic`。候选 `figure_first` 在 Figure 1 卡上因空间不足被拒绝，而非通过删减科学说明或降低字体强行通过。
+
+最终 **程序检测**：文本框交叉 0；本次 400px 卡片宽度下的字号静态警告 0；8 张卡片、PDF/PPTX 导出成功。请注意，该门槛仍不能证明 Figure 原图内部轴标可读，也不能替代 Windows Microsoft PowerPoint 字体替换与逐像素视觉审核。该工作流当前尚未调用独立 LLM Agent 自动创建布局偏好文件，已验证的是 **Agent 可提交的接口、内容驱动默认选择和实际候选回退机制**。
