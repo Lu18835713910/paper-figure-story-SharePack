@@ -13,14 +13,26 @@ def main(argv=None):
     g=sub.add_parser('audit-plan',help='Audit authored story structure and panel selection; does not create science')
     g.add_argument('--story',required=True);g.add_argument('--assets',required=True);g.add_argument('--outdir',required=True)
     c=sub.add_parser('validate');c.add_argument('--story',required=True);c.add_argument('--assets',required=True);c.add_argument('--profile',choices=('standard','full'))
-    d=sub.add_parser('render');d.add_argument('--story',required=True);d.add_argument('--assets',required=True);d.add_argument('--outdir',required=True);d.add_argument('--profile',choices=('standard','full'));d.add_argument('--no-pdf',action='store_true');d.add_argument('--layout-engine',choices=('freeform','legacy'),default='freeform')
+    d=sub.add_parser('render');d.add_argument('--story',required=True);d.add_argument('--assets',required=True);d.add_argument('--outdir',required=True);d.add_argument('--profile',choices=('standard','full'));d.add_argument('--no-pdf',action='store_true');d.add_argument('--layout-engine',choices=('freeform','legacy','editorial'),default='freeform')
     e=sub.add_parser('bridge-pfs',help='PFS 1.1 schema compatibility; emits source pointers, NOT cards')
     e.add_argument('--knowledge',required=True);e.add_argument('--pfs-assets');e.add_argument('--pfs-crosswalk');e.add_argument('--outdir',required=True)
     f=sub.add_parser('import-pfs-assets',help='Copy SHA-verified original PFS Figure assets into an isolated SharePack asset package')
     f.add_argument('--knowledge',required=True);f.add_argument('--pfs-assets',required=True);f.add_argument('--pfs-crosswalk');f.add_argument('--outdir',required=True)
+    x=sub.add_parser('extract-reviewed-figures',help='Strict PDF Figure+caption source binding (science pending)')
+    x.add_argument('--pdf',required=True);x.add_argument('--plan',required=True);x.add_argument('--outdir',required=True)
+    x=sub.add_parser('verify-reviewed-figures',help='Reverify immutable PDF Figure bytes against source')
+    x.add_argument('--pdf',required=True);x.add_argument('--manifest',required=True);x.add_argument('--plan',required=True)
     args=p.parse_args(argv)
     try:
-        if args.command=='prepare':
+        if args.command=='extract-reviewed-figures':
+            from .figure_evidence import extract_reviewed
+            data=extract_reviewed(args.pdf,args.plan,args.outdir)
+            print(json.dumps({'status':'SOURCE_EXTRACTED_NOT_SCIENCE_VERIFIED','figures':len(data['figures']),'publication_ready':False}))
+        elif args.command=='verify-reviewed-figures':
+            from .figure_evidence import verify_reviewed
+            data=verify_reviewed(args.pdf,args.manifest,args.plan)
+            print(json.dumps(data,ensure_ascii=False))
+        elif args.command=='prepare':
             from .ingest import inspect_pdf
             r=inspect_pdf(args.pdf,args.outdir);print(json.dumps({'pages':r['pages'],'candidate_figures':len(r['figures']),'review':'NOT_PERFORMED'},ensure_ascii=False))
         elif args.command=='extract-regions':

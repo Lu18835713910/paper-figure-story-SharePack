@@ -232,9 +232,10 @@ def render(checked_projection, outdir, *, pdf=True):
         import subprocess
         q=subprocess.run(['libreoffice','-env:UserInstallation=file:///tmp/lo_sharepack_logic_v5', '--headless', '--convert-to','pdf','--outdir',str(out),str(target)],capture_output=True,text=True,timeout=50)
         if q.returncode!=0:raise ContractError('PFS_LOGIC_PDF_EXPORT_FAILED:'+q.stderr[:200])
-        import fitz
+        from .pdf_backend import Document
         pdf_file=target.with_suffix('.pdf')
-        doc=fitz.open(pdf_file)
+        doc=Document(pdf_file)
         for i,page in enumerate(doc,1):
-            page.get_pixmap(matrix=fitz.Matrix(1.45,1.45),alpha=False).save(out/f'logic_{i:02d}.png')
+            (out/f'logic_{i:02d}.png').write_bytes(page.png(400/page.width,width=400))
+        doc.close()
     return target,report

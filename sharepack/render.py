@@ -1,7 +1,7 @@
 """Data-driven editable vertical PowerPoint renderer, no article-specific wording."""
 from pathlib import Path
 import json, re, zipfile, subprocess, tempfile, os
-import fitz
+from .pdf_backend import Document
 from PIL import Image,ImageDraw
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE,MSO_CONNECTOR
@@ -220,11 +220,16 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     outdir.mkdir(parents=True,exist_ok=True)
     pptpath=outdir/'SharePack_editable.pptx'
     if pptpath.exists():raise ContractError('OUTPUT_ALREADY_EXISTS_USE_NEW_DIRECTORY')
+    if story.get('research_logic') and layout_engine != 'editorial':
+        raise ContractError('EDITORIAL_LOGIC_ENGINE_REQUIRED')
     if layout_engine=='legacy':
         deck,geometry=slides(story,assets,root)
     elif layout_engine=='freeform':
         from .freeform import slides_freeform
         deck,geometry=slides_freeform(story,assets,root)
+    elif layout_engine=='editorial':
+        from .editorial import slides_editorial
+        deck,geometry=slides_editorial(story,assets,root)
     else:raise ContractError('LAYOUT_ENGINE_UNKNOWN')
     deck.save(pptpath)
     reports={'story_sha256':digest(story_path),'assets_sha256':digest(asset_path),
@@ -237,13 +242,14 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
                         '--outdir',str(outdir),str(pptpath)],capture_output=True,text=True,timeout=140)
         pdf=outdir/'SharePack_editable.pdf'
         if res.returncode!=0 or not pdf.exists():raise RuntimeError('LIBREOFFICE_EXPORT_FAILED:'+res.stderr)
-        doc=fitz.open(pdf)
+        doc=Document(pdf)
         if len(doc)!=len(story['cards']):raise RuntimeError('PDF_PAGE_COUNT_MISMATCH')
         carddir=outdir/'cards';carddir.mkdir(exist_ok=True);files=[]
         for i,page in enumerate(doc,1):
             name=carddir/f'{i:02d}_card.png'
-            page.get_pixmap(matrix=fitz.Matrix(1080/page.rect.width,1440/page.rect.height),alpha=False).save(name)
+            name.write_bytes(page.png(1080/page.width,width=1080))
             files.append(name)
+        doc.close()
         totalw=3*324;totalh=((len(files)+2)//3)*456
         sheet=Image.new('RGB',(totalw,totalh),(237,243,247))
         for i,f in enumerate(files):
@@ -258,6 +264,7 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
     bindings=[]
     for card in story['cards']:
         bindings.append({'card':card['order'],'title':card['title'],
+          **({'logic_sources':card['logic_sources']} if story.get('research_logic') else {}),
           'claims':[{'id':cid,'source_ids':by_claim[cid]['source_ids'],
                      'pfs_rsu_ids':by_claim[cid].get('pfs_rsu_ids',[]),
                      'pfs_relation_ids':by_claim[cid].get('pfs_relation_ids',[])} for cid in card['claim_ids']],
@@ -285,8 +292,8 @@ def build(story_path,asset_path,outdir, *, profile=None, render_png=True, layout
                     text_collisions.append({'page':i,'shape_a':a,'shape_b':b})
     with zipfile.ZipFile(pptpath) as z:
         xml=''.join(z.read(p).decode('utf-8') for p in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml',p))
-    small_slots=[{'card':g['card'],'asset_id':slot['asset_id'],'draw_height_in':slot['draw_height_in']}
-                 for g in geometry for slot in g['evidence_figure_slots'] if slot['draw_height_in']<1.30]
+    small_slots=[{'card':g['card'],'asset_id':slot['asset_id'],'draw_height_in':slot['draw_height_in'],'draw_width_in':slot['draw_width_in']}
+                 for g in geometry for slot in g['evidence_figure_slots'] if min(slot['draw_height_in'],slot['draw_width_in'])<1.30]
     reports['static_visual_qa']={'canvas_overflow':overflow,'simhei_declared':'SimHei' in xml,
        'tnr_declared':'Times New Roman' in xml,'small_panel_slots':small_slots,
        'text_text_collisions':text_collisions,

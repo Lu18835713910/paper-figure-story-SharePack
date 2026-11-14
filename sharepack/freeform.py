@@ -91,7 +91,7 @@ def draw_image(sl,a,root,x,y,w,h,*,min_pixel_h=1.18):
     figure_meta(sl,a,x,y+h-.24,w)
     return {'asset_id':a['id'],'draw_width_in':round(wi,3),'draw_height_in':round(hi,3),
             'slot':[round(x,3),round(y,3),round(w,3),round(h,3)],
-            'mobile_size_review_required':hi<min_pixel_h,
+            'mobile_size_review_required':min(wi,hi)<min_pixel_h,
             'review_status':a.get('review_status','PENDING')}
 
 def narrative_sizes(c,metrics,limits):
