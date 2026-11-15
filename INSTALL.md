@@ -25,3 +25,5 @@ artifacts. SharePack validates those file contracts and source hashes directly.
 It has no fallback PFS implementation and invokes no PFS installer.
 
 Run python scripts/check_pfs_compatibility.py --loaded-skill PATH for the host-selected PFS directory. Its tree SHA distinguishes installations even when VERSION matches. Match the tree to an independent PFS receipt to establish a Git revision. The bridge also checks each artifact contract when it is used.
+
+Maintainers: see docs/RELEASE_DEPLOYMENT.md in the source repository.
