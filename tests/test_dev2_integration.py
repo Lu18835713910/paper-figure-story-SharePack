@@ -129,6 +129,6 @@ class FigureCaptions(unittest.TestCase):
    make_synthetic_pdf(pdf, captions=('Fig. 1 | Nature', 'Fig 2. PLOS Figure', 'Figure 3: Other'))
    result=inspect_pdf(pdf,root/'result')
    self.assertEqual([f['figure_label'] for f in result['figures']],['Fig. 1','Fig. 2','Fig. 3'])
-   self.assertTrue(all(f['status']=='CANDIDATE_NOT_PANEL_VERIFIED' for f in result['figures']))
+   self.assertTrue(all(f['status']=='CAPTION_CANDIDATE_REQUIRES_REVIEWED_REGION' for f in result['figures']))
 
 if __name__=='__main__':unittest.main()
