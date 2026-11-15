@@ -26,7 +26,7 @@ description: 从科研论文或经验证的 PFS 科研逻辑、A/B 图与 Figure
 3. 缓存未覆盖时，从多类来源发现候选。默认包含 https://logos-download.com/，同时查 Wikimedia Commons、期刊官网、出版社品牌页面及历史官方材料，可扩展到其他素材网站。记录每个渠道有无结果；单一来源不能独立确立历史身份或使用授权。优先对照实际发表文章和出版社档案，再从候选中选择适用年代与视觉版本。
 4. 逐候选登记候选页面与直接素材网址、文件格式、历史/当前/未知版本、时间证据、来源可信度、实际资产 SHA-256、用途及权利限制。无法取得字节时填空并记录原因。用视觉样张比对字形、图案、色彩和使用年代，由 Agent 选择。素材哈希用于校验字节，网站下载或公版标签不自动授权商标使用。
 5. 权利不明时，默认保持普通文本刊名、DOI 和独立解读署名。只有用户明确指定的私人评审才可使用已核实的权利待确认标识，并记录仅供私人评审；公开分发需独立检查使用依据。
-6. 对每份已冻结的实际文件调用 scripts/brand_tool.py 的 inspect、draft、apply、verify。按 400px 草图逐页选位置、尺寸与底板，分别校验未被调整和调整后对象的碰撞。验证 PPTX 字节身份、原科研图嵌入 SHA 和原文字。用原生宿主导出，再比对 400px；正文区变化必须调查。先排除影响后才登记该版为适配完成。工具执行保持为显式步骤，品牌工作流的自动启动由 Skill 指令触发。
+6. 仅在已安装 SharePack Python wheel（或已验证的源码包）且 `sharepack-brand` 命令可用时，对已冻结的实际文件运行 `sharepack-brand inspect`、`draft`、`apply`、`verify`。独立安装 Skill ZIP 不等于安装 Python CLI；如果尚无该命令，提示先独立安装 SharePack Python 包，不得调用不存在的 `scripts/brand_tool.py`。按 400px 草图逐页选位置、尺寸与底板，分别校验未被调整和调整后对象的碰撞。验证 PPTX 字节身份、原科研图嵌入 SHA 和原文字。用原生宿主导出，再比对 400px；正文区变化必须调查。先排除影响后才登记该版为适配完成。工具执行保持为显式步骤，品牌工作流的自动启动由 Skill 指令触发。
 ## PFS Research Logic 与 Figure 融合
 
 先在 PFS 确认同一论文的 M1、Scientific Index、Evidence Network、Research Logic 和 Figure 登记。复用 `bridge-pfs`、`import-pfs-assets` 取得本次真实来源。核对原文和图注后，由 Agent 按 A 核心、B 支线、汇合及边界编排，并保持完整 B 独立。
@@ -34,3 +34,7 @@ description: 从科研论文或经验证的 PFS 科研逻辑、A/B 图与 Figure
 在 story 中添加 `research_logic`（`path`、`sha256`、`snapshot`）和现有 `pfs_bridge`。逐页 `logic_sources` 登记 `nodes`、`relations`、`rsus`，A 导览设 `scope: A`，支线设真实 `branch` ID。使用 `logic_node` 和 `logic_edge` 生成原生形状与连接线，分别用 `node_id` 和 `relation_id` 引用已登记身份。Agent 提供节点坐标和经科学核对的可选短显示文字。按实际证据选择 `figure` 元素，可用归一化 `crop: [left, top, right, bottom]` 放大且保留图片字节与来源。复核图窗的比例尺和标签。局限与作者模型在正文标明。
 
 运行 `python -m sharepack render --layout-engine editorial --story STORY --assets ASSETS --outdir NEW_DIR --no-pdf`。关系身份与 SHA 在备注和 `card_source_map.json` 查看。现场 PowerPoint PDF 导出及 400px 科学可读性检查仍单独执行。
+
+## 安装边界
+
+Standalone 不需要 PFS。SharePack 安装、升级、卸载和回滚只处理 SharePack。若用户请求 PFS-assisted，先向宿主核对实际加载的 PFS 路径、版本及安装回执中的修订；仅凭 VERSION 无法推断 Git 修订。不兼容、缺少 PFS 或缺少所需成果时，提示从 https://github.com/Lu18835713910/paper-figure-story 独立安装或更新。不得调用 PFS 安装器或替换 PFS。成果通过现有只读文件合同交接。

@@ -142,3 +142,7 @@ python scripts/render_reviewed.py \
 [获取正式版](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.0) · [返回顶部](#sharepack)
 
 </div>
+
+### 独立安装边界
+
+SharePack 独立安装即可运行 Standalone。PFS-assisted 用户应从 PFS 官方仓库独立安装 PFS，并交接已审核成果。两个项目分别安装、升级与回滚。详见 [INSTALL.md](INSTALL.md)。
