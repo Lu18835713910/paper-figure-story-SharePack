@@ -12,6 +12,9 @@ ROOT_FILES = {'SKILL.md', 'LICENSE', 'LICENSE_STATUS.md', 'NOTICE_THIRD_PARTY.md
               'NOTICE_PDF_DEPENDENCIES.md', 'INSTALL.md', 'VERSION'}
 SCRIPTS = {'install_sharepack.py', 'render_reviewed.py', 'pfs_logic_projection.py',
            'check_pfs_compatibility.py', 'draft_ab_view_spec.py', 'verify_real_pfs_bridge.py'}
+REQUIRED_FILES = ROOT_FILES | {'references/SKILL_BRANDING_ADDENDUM.md'} | {
+    f'scripts/{name}' for name in SCRIPTS
+}
 
 
 def check_path(path):
@@ -38,6 +41,28 @@ def recognized(path):
     return 'name: ' + NAME in (path / 'SKILL.md').read_text(encoding='utf-8-sig').splitlines()[:10]
 
 
+def source_manifest(source, *, full_install=True):
+    """Validate before any active-directory rename.
+
+    A fresh install requires every file documented in the Skill bundle.
+    Rollback may restore a smaller, installer-created legacy backup.
+    """
+    required = REQUIRED_FILES if full_install else {'SKILL.md', 'VERSION'}
+    missing = sorted(key for key in required if not (source / key).is_file())
+    if missing:
+        raise ValueError('Incomplete SharePack Skill bundle; missing: ' + ', '.join(missing))
+    files = {}
+    for key in sorted(REQUIRED_FILES):
+        path = source / key
+        if not path.is_file():
+            continue
+        check_path(path)
+        files[key] = hashlib.sha256(path.read_bytes()).hexdigest()
+    if not (source / 'VERSION').read_text(encoding='utf-8-sig').strip():
+        raise ValueError('SharePack VERSION file is empty')
+    return files
+
+
 def switch(root, action, source=None, backup=None):
     root = root.absolute()
     if root.name != 'skills' or not root.is_dir():
@@ -58,14 +83,7 @@ def switch(root, action, source=None, backup=None):
         check_path(source)
         if source == target or source.is_relative_to(target) or not recognized(source):
             raise ValueError('Select an extracted SharePack bundle or backup')
-        allowed = ROOT_FILES | {'references/SKILL_BRANDING_ADDENDUM.md'}
-        allowed |= {f'scripts/{name}' for name in SCRIPTS}
-        files = {}
-        for key in sorted(allowed):
-            path = source / key
-            check_path(path)
-            if path.is_file():
-                files[key] = hashlib.sha256(path.read_bytes()).hexdigest()
+        files = source_manifest(source, full_install=(action == 'install'))
         if target.exists() and manifest(target) == files:
             return 'UNCHANGED'
     elif not target.exists():
