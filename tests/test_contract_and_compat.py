@@ -1,6 +1,7 @@
 import copy,hashlib,json,tempfile,unittest,sys
 from pathlib import Path
 from PIL import Image
+from tests._synthetic_pdf import make_synthetic_pdf
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from sharepack.common import ContractError,save,load,digest
@@ -13,8 +14,7 @@ class ContractAndCompatibility(unittest.TestCase):
  def setUp(self):
   self.t=tempfile.TemporaryDirectory();self.root=Path(self.t.name)
   src=self.root/'original.pdf'
-  import fitz
-  d=fitz.open();p=d.new_page();p.insert_text((60,100),'Research data');p.insert_text((70,500),'Fig. 1 | Evidence panel');d.save(src);d.close()
+  make_synthetic_pdf(src, captions=['Fig. 1 | Evidence panel'])
   self.pdf=src;self.sha=digest(src)
   region={'source_pdf_sha256':self.sha,'regions':[{'id':'A1','figure':'Figure 1','pdf_page':1,'crop_pdf_pt':[48,120,300,380]}]}
   save(self.root/'regions.json',region);extract_regions(src,self.root/'regions.json',self.root/'assets')

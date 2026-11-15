@@ -5,7 +5,7 @@ Runs entirely on an original synthetic PDF; no copyrighted figures required.
 import copy, hashlib, json, tempfile, unittest
 from io import BytesIO
 from pathlib import Path
-import fitz
+from tests._synthetic_pdf import make_synthetic_pdf
 from pypdf import PdfReader
 from PIL import Image
 from sharepack.figure_evidence import PLAN_VERSION, digest, extract_reviewed, verify_reviewed, FigureEvidenceError
@@ -16,13 +16,13 @@ class BindingRegression(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.d=Path(self.temp.name)
         self.pdf=self.d/'synthetic.pdf'
-        doc=fitz.open();p=doc.new_page();self.xrefs=[];self.images=[]
+        self.xrefs=[];self.images=[]
         for k in (1,2):
             im=Image.new('RGB',(640,400), (70*k,80,120))
             raw=BytesIO();im.save(raw,format='PNG');self.images.append(raw.getvalue())
-            self.xrefs.append(p.insert_image(fitz.Rect(40+280*(k-1),80,300+280*(k-1),275),stream=raw.getvalue()))
-        doc.new_page().insert_text((60,90),'Fig. 1 | Two microscopy samples', fontsize=13)
-        doc.save(self.pdf);doc.close()
+        self.xrefs=make_synthetic_pdf(self.pdf,
+            images=[(raw,(40+280*i,320,260,195)) for i,raw in enumerate(self.images)],
+            captions=['Fig. 1 | Two microscopy samples'])
         reader=PdfReader(self.pdf); images={i.indirect_reference.idnum:i.data for i in reader.pages[0].images}; self.raw=[images[x] for x in self.xrefs];reader.close()
         self.plan={'contract':PLAN_VERSION,'paper_pdf_sha256':digest(self.pdf),
                    'review_decision':'FIGURE_PLAN_APPROVED_FOR_PRIVATE_REVIEW','figures':[
