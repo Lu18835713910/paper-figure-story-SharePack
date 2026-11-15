@@ -3,7 +3,7 @@ import copy
 import tempfile
 import unittest
 from pathlib import Path
-import fitz
+from tests._synthetic_pdf import make_synthetic_pdf
 from PIL import Image
 
 from sharepack.common import ContractError,save,load,digest
@@ -125,11 +125,8 @@ class BridgeIntegration(unittest.TestCase):
 class FigureCaptions(unittest.TestCase):
  def test_nature_plos_and_other_caption_styles_are_candidates_only(self):
   with tempfile.TemporaryDirectory() as t:
-   root=Path(t);pdf=root/'test.pdf';doc=fitz.open()
-   for line in ('Fig. 1 | Nature', 'Fig 2. PLOS Figure', 'Figure 3: Other'):
-    p=doc.new_page();p.draw_rect(fitz.Rect(70,80,340,260),color=(0,0,0))
-    p.insert_text((65,575),line,fontsize=11)
-   doc.save(pdf);doc.close()
+   root=Path(t);pdf=root/'test.pdf'
+   make_synthetic_pdf(pdf, captions=('Fig. 1 | Nature', 'Fig 2. PLOS Figure', 'Figure 3: Other'))
    result=inspect_pdf(pdf,root/'result')
    self.assertEqual([f['figure_label'] for f in result['figures']],['Fig. 1','Fig. 2','Fig. 3'])
    self.assertTrue(all(f['status']=='CANDIDATE_NOT_PANEL_VERIFIED' for f in result['figures']))
