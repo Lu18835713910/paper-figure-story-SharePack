@@ -3,3 +3,4 @@ include LICENSE LICENSE_STATUS.md NOTICE*.md
 recursive-include scripts *.py
 recursive-include references *.md
 recursive-include examples *.py *.json *.pdf
+include INSTALL.md

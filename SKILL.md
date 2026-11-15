@@ -34,3 +34,7 @@ description: 从科研论文或经验证的 PFS 科研逻辑、A/B 图与 Figure
 在 story 中添加 `research_logic`（`path`、`sha256`、`snapshot`）和现有 `pfs_bridge`。逐页 `logic_sources` 登记 `nodes`、`relations`、`rsus`，A 导览设 `scope: A`，支线设真实 `branch` ID。使用 `logic_node` 和 `logic_edge` 生成原生形状与连接线，分别用 `node_id` 和 `relation_id` 引用已登记身份。Agent 提供节点坐标和经科学核对的可选短显示文字。按实际证据选择 `figure` 元素，可用归一化 `crop: [left, top, right, bottom]` 放大且保留图片字节与来源。复核图窗的比例尺和标签。局限与作者模型在正文标明。
 
 运行 `python -m sharepack render --layout-engine editorial --story STORY --assets ASSETS --outdir NEW_DIR --no-pdf`。关系身份与 SHA 在备注和 `card_source_map.json` 查看。现场 PowerPoint PDF 导出及 400px 科学可读性检查仍单独执行。
+
+## 安装边界
+
+Standalone 不需要 PFS。SharePack 安装、升级、卸载和回滚只处理 SharePack。若用户请求 PFS-assisted，先向宿主核对实际加载的 PFS 路径、版本及安装回执中的修订；仅凭 VERSION 无法推断 Git 修订。不兼容、缺少 PFS 或缺少所需成果时，提示从 https://github.com/Lu18835713910/paper-figure-story 独立安装或更新。不得调用 PFS 安装器或替换 PFS。成果通过现有只读文件合同交接。
