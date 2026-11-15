@@ -3,7 +3,7 @@ name: paper-figure-story-sharepack
 description: 从科研论文或经验证的 PFS 科研逻辑、A/B 图与 Figure 证据制作可编辑中文竖版科研故事卡片。支持 Standalone 和 PFS-assisted，由 Agent 负责科研编辑与视觉设计并保留来源。
 ---
 
-# SharePack v1.0.0 编辑工作流
+# SharePack v1.0.1 编辑工作流
 
 - 只有论文 PDF、目标是科研小卡片时，使用 SharePack Standalone。
 - 已有 PFS v1.2.0 科研逻辑和 Figure 时，使用 SharePack PFS-assisted。核对 M1 Schema 1.1 和 Research Logic 合同 pfs-research-logic-1。

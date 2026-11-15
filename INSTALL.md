@@ -27,3 +27,5 @@ It has no fallback PFS implementation and invokes no PFS installer.
 Run python scripts/check_pfs_compatibility.py --loaded-skill PATH for the host-selected PFS directory. Its tree SHA distinguishes installations even when VERSION matches. Match the tree to an independent PFS receipt to establish a Git revision. The bridge also checks each artifact contract when it is used.
 
 Maintainers: see docs/RELEASE_DEPLOYMENT.md in the source repository.
+
+Use the v1.0.1 wheel and v1.0.1 Skill ZIP together. Experimental simplified PFS A handoff is not supported.

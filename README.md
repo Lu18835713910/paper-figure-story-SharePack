@@ -8,9 +8,9 @@
 
 <img src="docs/images/sharepack-cover.svg" alt="SharePack 原创科研传播工作流示意：问题、证据、认识三张竖版卡片，非真实实验数据" width="100%">
 
-**v1.0.0 正式版** · **Standalone / PFS-assisted** · **可编辑竖版 PowerPoint** · **来源可追溯**
+**v1.0.1 正式版** · **Standalone / PFS-assisted** · **可编辑竖版 PowerPoint** · **来源可追溯**
 
-[正式版下载](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.0) · [安装与运行](#安装与快速开始) · [两种工作模式](#两种工作模式) · [科研来源与限制](#科研来源与使用边界)
+[正式版下载](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.1) · [安装与运行](#安装与快速开始) · [两种工作模式](#两种工作模式) · [科研来源与限制](#科研来源与使用边界)
 
 </div>
 
@@ -63,12 +63,12 @@ PFS-assisted 已在**一篇真实论文案例**中完成同源模型、逻辑与
 
 ### 方式一：通过正式 Release 安装
 
-前往 **[SharePack v1.0.0 Release](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.0)**，获取已发布的 wheel、Skill ZIP、源码包（sdist）和原创演示包。
+前往 **[SharePack v1.0.1 Release](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.1)**，获取已发布的 wheel、Skill ZIP、源码包（sdist）。
 
 在 Python 3.10+ 环境中安装下载的 wheel（命令在该文件所在目录运行）：
 
 ```bash
-python -m pip install paper_figure_story_sharepack-1.0.0-py3-none-any.whl
+python -m pip install paper_figure_story_sharepack-1.0.1-py3-none-any.whl
 python -m pip check
 python -m sharepack --help
 ```
@@ -95,7 +95,7 @@ python scripts/render_reviewed.py \
 
 **Standalone**
 
-> 使用 SharePack v1.0.0 Standalone 模式阅读我提供的论文和补充资料，先核查研究问题、实验对照、原始 Figure 及结论边界，再组织中文竖版科研故事卡片。保留原始Figure来源，交付可编辑PPTX、来源台账和视觉检查结果。
+> 使用 SharePack v1.0.1 Standalone 模式阅读我提供的论文和补充资料，先核查研究问题、实验对照、原始 Figure 及结论边界，再组织中文竖版科研故事卡片。保留原始Figure来源，交付可编辑PPTX、来源台账和视觉检查结果。
 
 **PFS-assisted**
 
@@ -127,11 +127,11 @@ python scripts/render_reviewed.py \
 
 ## 版本、授权与引用
 
-**当前正式版：[v1.0.0](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.0)**。维护分支或后续main文档修订不会自动更改已冻结的 v1.0.0 Tag、wheel 或 Skill ZIP。需复现时优先固定 Release 附件及其SHA。
+**当前正式版：[v1.0.1](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.1)**。维护分支或后续main文档修订不会自动更改已冻结的 v1.0.0 Tag、wheel 或 Skill ZIP。需复现时优先固定 Release 附件及其SHA。
 
 **许可证：个人非商业使用，源码可查看（不是OSI开源许可证）。** 个人学习、科研和私人修改范围见 [LICENSE](LICENSE)；商业使用、共享机构部署以及软件再分发需要另外授权。第三方论文、Figure、数据、期刊Logo与PFS软件不因SharePack许可证自动获得授权。详见 [LICENSE_STATUS.md](LICENSE_STATUS.md)、[第三方素材说明](NOTICE_THIRD_PARTY.md) 和 [PDF依赖声明](NOTICE_PDF_DEPENDENCIES.md)。
 
-如复用本项目的方法或软件，请注明：*SharePack v1.0.0, Paper Figure Story · SharePack*，并附仓库或正式Release链接。此项为建议署名，并非对未发布科研内容的引用要求。
+如复用本项目的方法或软件，请注明：*SharePack v1.0.1, Paper Figure Story · SharePack*，并附仓库或正式Release链接。此项为建议署名，并非对未发布科研内容的引用要求。
 
 ---
 
@@ -139,7 +139,7 @@ python scripts/render_reviewed.py \
 
 **Evidence first. Story second. Design with traceability.**
 
-[获取正式版](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.0) · [返回顶部](#sharepack)
+[获取正式版](https://github.com/Lu18835713910/paper-figure-story-SharePack/releases/tag/v1.0.1) · [返回顶部](#sharepack)
 
 </div>
 

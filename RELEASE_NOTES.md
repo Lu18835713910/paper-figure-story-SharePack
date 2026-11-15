@@ -1,8 +1,11 @@
-# SharePack v1.0.0
+# SharePack v1.0.1
 
-- Standalone editable research cards from an Agent-reviewed paper story and Figure plan.
-- PFS-assisted editing from PFS software v1.2.0, M1 Schema 1.1 and the pfs-research-logic-1 contract. The verified case uses A/B logic and source-bound Figure evidence.
-- PDFium and pypdf for reviewed crops, text and preview generation. See README and NOTICE_PDF_DEPENDENCIES.md.
-- Source-available for personal non-commercial use. See LICENSE.
+Installation safety maintenance for SharePack.
 
-Limitations: Some original chart labels need the full-size PDF. Automated checks do not constitute independent scientific review. The PFS-assisted acceptance uses one real paper. WorkBuddy routing has not been verified for this release.
+- SharePack installation, upgrade, uninstall and rollback operate on one explicitly selected host and only on SharePack. PFS remains independently installed.
+- The retired cross-host deployment is outside the release procedure. The old RC workflow is notice-only.
+- Fresh Skill installs require a complete bundle before replacement. Rollback accepts legacy SharePack backups.
+- Brand workflow commands use the installed sharepack-brand CLI.
+- Existing reviewed PFS M1 Schema 1.1, Research Logic and Figure handoffs remain supported. Experimental simplified A handoff is unsupported.
+
+The release includes a wheel, source distribution and standalone SharePack Skill ZIP.

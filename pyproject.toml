@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paper-figure-story-sharepack"
-version = "1.0.0"
+version = "1.0.1"
 description = "Scientific storytelling portrait cards from reviewed evidence, optionally linked to PFS"
 readme = "README.md"
 license = "LicenseRef-SharePack-Personal-Noncommercial-1.0"
