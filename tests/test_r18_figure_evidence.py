@@ -10,7 +10,7 @@ import unittest
 from io import BytesIO
 from pathlib import Path
 
-import fitz
+from tests._synthetic_pdf import make_synthetic_pdf
 from pypdf import PdfReader
 from PIL import Image, ImageDraw
 
@@ -25,10 +25,8 @@ class FigureSourceFixtureTest(unittest.TestCase):
         d.rectangle((20,30,300,270),fill='#457ca5');d.rectangle((330,30,580,270),fill='#99bbcc')
         b=BytesIO();im.save(b,format='PNG')
         self.pdf=self.dir/'synthetic.pdf'
-        doc=fitz.open();p=doc.new_page()
-        x=p.insert_image(fitz.Rect(60,70,460,285),stream=b.getvalue())
-        q=doc.new_page();q.insert_text((60,100),'Fig. 1 | Simulated evidence image',fontsize=14)
-        doc.save(self.pdf);doc.close()
+        x=make_synthetic_pdf(self.pdf, images=[(b.getvalue(),(60,300,400,215))],
+                             captions=['Fig. 1 | Simulated evidence image'])[0]
         reader=PdfReader(self.pdf);source=next(i.data for i in reader.pages[0].images if i.indirect_reference.idnum==x);reader.close()
         self.plan={'contract':PLAN_VERSION,'paper_pdf_sha256':digest(self.pdf),
             'review_decision':'FIGURE_PLAN_APPROVED_FOR_PRIVATE_REVIEW',
