@@ -14,7 +14,7 @@ def create_complete_bundle(source):
     for key in sorted(installer.REQUIRED_FILES):
         path = source / key
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text('name: paper-figure-story-sharepack\\nfirst' if key == 'SKILL.md'
+        path.write_text('name: paper-figure-story-sharepack\nfirst' if key == 'SKILL.md'
                         else ('1.0.0' if key == 'VERSION' else key))
     return source / 'SKILL.md'
 
@@ -98,7 +98,7 @@ class Isolation(unittest.TestCase):
             skills.mkdir()
             legacy = root / 'sharepack-skill-backups' / 'sharepack-legacy-previous'
             legacy.mkdir(parents=True)
-            (legacy / 'SKILL.md').write_text('name: paper-figure-story-sharepack\\nlegacy')
+            (legacy / 'SKILL.md').write_text('name: paper-figure-story-sharepack\nlegacy')
             (legacy / 'VERSION').write_text('0.9.0')
             installer.switch(skills, 'install', source)
             installer.switch(skills, 'rollback', backup=legacy.name)
