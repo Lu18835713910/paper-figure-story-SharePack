@@ -26,6 +26,27 @@
 | :--- | :--- | :--- |
 | 按问题、方法、观察、进一步探索和综合认识组织卡片；允许并行分支与汇合 | 将关键 Figure / panel 绑定原论文 PDF、页码、裁图区域与文件身份 | 输出竖版 PPTX，文字与逻辑图形可编辑，原始 Figure 可独立替换 |
 
+## 真实生成的科研卡片｜历史作品展示
+
+以下截图来自**实际制作并导出的可编辑 PowerPoint 科研卡片**，并非AI概念效果图。这里优先展示信息层次和科研叙事较清楚的历史成果；封面上方的无文字插画仅用于介绍产品，不是科研产物。
+
+<table>
+<tr>
+<td align="center" width="60%">
+<a href="https://raw.githubusercontent.com/Lu18835713910/paper-figure-story-SharePack/v0.1.0-rc.1/docs/images/standalone_design_reference.png"><img src="https://raw.githubusercontent.com/Lu18835713910/paper-figure-story-SharePack/v0.1.0-rc.1/docs/images/standalone_design_reference.png" alt="真实生成的双页科研故事卡片设计参考：从研究机制到定量比较，包含原生编辑图文" width="100%"></a>
+<br><strong>科研解释与结果对照</strong><br>实际PPTX导出的双页版式参考
+</td>
+<td align="center" width="40%">
+<a href="https://raw.githubusercontent.com/Lu18835713910/paper-figure-story-SharePack/v0.1.0-rc.1/docs/images/protein_control.png"><img src="https://raw.githubusercontent.com/Lu18835713910/paper-figure-story-SharePack/v0.1.0-rc.1/docs/images/protein_control.png" alt="真实生成的科研故事卡片：蛋白对照实验解释与证据限定" width="100%"></a>
+<br><strong>实验对照与证据边界</strong><br>历史PFS协同十卡案例中的第9页
+</td>
+</tr>
+</table>
+
+> **展示范围说明**：两张图均来自旧版真实作品，而不是合成界面或重新绘制的实验结果。左侧是偏Standalone的设计参考，**不是严格独立的Standalone盲测**；右侧属于经过人工编排的历史PFS协同案例，**不代表v1.0.1能自动复制相同视觉设计或完成独立科学终审**。原图可能需要放大查看标注。历史可复现性与说明见[公开作品来源登记](docs/DEMO_PROVENANCE.md)。
+>
+> **论文及图片署名**：相关实验Figure源自[Passmore等人的研究（Nature Communications，DOI: 10.1038/s41467-025-67848-5）](https://doi.org/10.1038/s41467-025-67848-5)，原论文适用[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；截图为SharePack对研究图表的选取、裁剪、中文解释和卡片排版，并非期刊官方出品。图像在公开展示前仍须遵守原始论文各素材适用的权利条件。
+
 ## 两种工作模式
 
 | | **Standalone** | **PFS-assisted** |
